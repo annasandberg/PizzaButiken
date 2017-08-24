@@ -19,9 +19,9 @@ namespace PizzaButiken.Controllers
             _context = context;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int dishCategoryId)
         {
-            return View(await _context.Dishes.ToListAsync());
+            return View(await _context.Dishes.Where(x => x.DishCategoryId == dishCategoryId).ToListAsync());
         }
 
         public IActionResult About()

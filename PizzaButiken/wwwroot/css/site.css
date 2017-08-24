@@ -33,3 +33,13 @@
         display: none;
     }
 }
+
+.topContainer {
+    background-image: url('../images/pizzaBar.jpg');
+    height: 195px;
+}
+
+.dishCategories{
+    color: black !important;
+    font-weight: bold !important;
+}

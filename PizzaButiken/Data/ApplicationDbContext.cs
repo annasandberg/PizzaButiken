@@ -23,6 +23,8 @@ namespace PizzaButiken.Data
 
             builder.Entity<DishIngredient>().HasOne(i => i.Ingredient).WithMany(d => d.DishIngredients).HasForeignKey(i => i.IngredientId);
 
+            builder.Entity<Dish>().HasOne(dc => dc.DishCategory).WithMany(di => di.Dishes).HasForeignKey(dc => dc.DishCategoryId);
+
             base.OnModelCreating(builder);
             // Customize the ASP.NET Identity model and override the defaults if needed.
             // For example, you can rename the ASP.NET Identity table names and more.
@@ -32,5 +34,6 @@ namespace PizzaButiken.Data
         public DbSet<Dish> Dishes { get; set; }
         public DbSet<Ingredient> Ingredients { get; set; }
         public DbSet<DishIngredient> DishIngredients { get; set; }
+        public DbSet<DishCategory> DishCategories { get; set; }
     }
 }

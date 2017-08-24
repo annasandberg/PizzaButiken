@@ -36,16 +36,24 @@ namespace PizzaButiken.Data
                 var ham = new Ingredient { Name = "Ham" };
                 var mushroom = new Ingredient { Name = "Mushrooms" };
                 var pineapple = new Ingredient { Name = "Pineapple" };
+                var spaghetti = new Ingredient { Name = "Spagetti" };
+                var lettuce = new Ingredient { Name = "Lettuce" };
 
                 context.Ingredients.Add(cheese);
                 context.Ingredients.Add(tomatoe);
                 context.Ingredients.Add(ham);
                 context.Ingredients.Add(mushroom);
                 context.Ingredients.Add(pineapple);
+                context.Ingredients.Add(lettuce);
+                context.Ingredients.Add(spaghetti);
 
                 var cappricciosa = new Dish { Name = "Cappricciosa", Price = 79 };
                 var margherita = new Dish { Name = "Margherita", Price = 69 };
                 var hawaii = new Dish { Name = "Hawaii", Price = 85 };
+                var pastaCarbonara = new Dish { Name = "Pasta Carbonara", Price = 75 };
+                var pastaPomodore = new Dish { Name = "Pasta Tomatsås", Price = 69 };
+                var saladHam = new Dish { Name = "Ost och Skinksallad", Price = 75 };
+                var saladPasta = new Dish { Name = "Pastasallad", Price = 79 };
 
                 var cappricciosaCheese = new DishIngredient { Dish = cappricciosa, Ingredient = cheese };
                 var cappricciosaHam = new DishIngredient { Dish = cappricciosa, Ingredient = ham };
@@ -58,6 +66,12 @@ namespace PizzaButiken.Data
                 cappricciosa.DishIngredients.Add(cappricciosaHam);
                 cappricciosa.DishIngredients.Add(cappriocciosaMushrooms);
 
+                var pizza = new DishCategory { Name = "Pizza" };
+                var salad = new DishCategory { Name = "Sallad" };
+                var pasta = new DishCategory { Name = "Pasta" };
+
+                cappricciosa.DishCategory = pizza;
+
                 var margheritaCheese = new DishIngredient { Dish = margherita, Ingredient = cheese };
                 var margheritaHam = new DishIngredient { Dish = margherita, Ingredient = ham };
                 var margheritaTomatoe = new DishIngredient { Dish = margherita, Ingredient = tomatoe };
@@ -67,11 +81,23 @@ namespace PizzaButiken.Data
                 margherita.DishIngredients.Add(margheritaHam);
                 margherita.DishIngredients.Add(margheritaTomatoe);
 
+                margherita.DishCategory = pizza;
+
+                hawaii.DishCategory = pizza;
+                saladHam.DishCategory = salad;
+                saladPasta.DishCategory = salad;
+                pastaCarbonara.DishCategory = pasta;
+                pastaPomodore.DishCategory = pasta;
+
                 //context.AddRange(cappricciosaCheese, cappricciosaHam, cappricciosaTomatoe, cappriocciosaMushrooms);
                 //context.AddRange(cappricciosa, margherita, hawaii);
                 context.Dishes.Add(cappricciosa);
                 context.Dishes.Add(margherita);
                 context.Dishes.Add(hawaii);
+                context.Dishes.Add(saladHam);
+                context.Dishes.Add(saladPasta);
+                context.Dishes.Add(pastaCarbonara);
+                context.Dishes.Add(pastaPomodore);
                 context.SaveChanges();
             }
         }
