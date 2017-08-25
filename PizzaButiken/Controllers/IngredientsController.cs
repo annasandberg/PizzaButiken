@@ -10,22 +10,22 @@ using PizzaButiken.Models;
 
 namespace PizzaButiken.Controllers
 {
-    public class DishesController : Controller
+    public class IngredientsController : Controller
     {
         private readonly ApplicationDbContext _context;
 
-        public DishesController(ApplicationDbContext context)
+        public IngredientsController(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        // GET: Dishes
+        // GET: Ingredients
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Dishes.ToListAsync());
+            return View(await _context.Ingredients.ToListAsync());
         }
 
-        // GET: Dishes/Details/5
+        // GET: Ingredients/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -33,41 +33,39 @@ namespace PizzaButiken.Controllers
                 return NotFound();
             }
 
-            var dish = await _context.Dishes
-                .Include(d => d.DishIngredients)
-                .ThenInclude(di => di.Ingredient)
-                .SingleOrDefaultAsync(m => m.DishId == id);
-            if (dish == null)
+            var ingredient = await _context.Ingredients
+                .SingleOrDefaultAsync(m => m.IngredientId == id);
+            if (ingredient == null)
             {
                 return NotFound();
             }
 
-            return View(dish);
+            return View(ingredient);
         }
 
-        // GET: Dishes/Create
+        // GET: Ingredients/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Dishes/Create
+        // POST: Ingredients/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("DishId,Name,Price")] Dish dish)
+        public async Task<IActionResult> Create([Bind("IngredientId,Name")] Ingredient ingredient)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(dish);
+                _context.Add(ingredient);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(dish);
+            return View(ingredient);
         }
 
-        // GET: Dishes/Edit/5
+        // GET: Ingredients/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -75,22 +73,22 @@ namespace PizzaButiken.Controllers
                 return NotFound();
             }
 
-            var dish = await _context.Dishes.SingleOrDefaultAsync(m => m.DishId == id);
-            if (dish == null)
+            var ingredient = await _context.Ingredients.SingleOrDefaultAsync(m => m.IngredientId == id);
+            if (ingredient == null)
             {
                 return NotFound();
             }
-            return View(dish);
+            return View(ingredient);
         }
 
-        // POST: Dishes/Edit/5
+        // POST: Ingredients/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("DishId,Name,Price")] Dish dish)
+        public async Task<IActionResult> Edit(int id, [Bind("IngredientId,Name")] Ingredient ingredient)
         {
-            if (id != dish.DishId)
+            if (id != ingredient.IngredientId)
             {
                 return NotFound();
             }
@@ -99,12 +97,12 @@ namespace PizzaButiken.Controllers
             {
                 try
                 {
-                    _context.Update(dish);
+                    _context.Update(ingredient);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!DishExists(dish.DishId))
+                    if (!IngredientExists(ingredient.IngredientId))
                     {
                         return NotFound();
                     }
@@ -115,10 +113,10 @@ namespace PizzaButiken.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(dish);
+            return View(ingredient);
         }
 
-        // GET: Dishes/Delete/5
+        // GET: Ingredients/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -126,30 +124,30 @@ namespace PizzaButiken.Controllers
                 return NotFound();
             }
 
-            var dish = await _context.Dishes
-                .SingleOrDefaultAsync(m => m.DishId == id);
-            if (dish == null)
+            var ingredient = await _context.Ingredients
+                .SingleOrDefaultAsync(m => m.IngredientId == id);
+            if (ingredient == null)
             {
                 return NotFound();
             }
 
-            return View(dish);
+            return View(ingredient);
         }
 
-        // POST: Dishes/Delete/5
+        // POST: Ingredients/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var dish = await _context.Dishes.SingleOrDefaultAsync(m => m.DishId == id);
-            _context.Dishes.Remove(dish);
+            var ingredient = await _context.Ingredients.SingleOrDefaultAsync(m => m.IngredientId == id);
+            _context.Ingredients.Remove(ingredient);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool DishExists(int id)
+        private bool IngredientExists(int id)
         {
-            return _context.Dishes.Any(e => e.DishId == id);
+            return _context.Ingredients.Any(e => e.IngredientId == id);
         }
     }
 }

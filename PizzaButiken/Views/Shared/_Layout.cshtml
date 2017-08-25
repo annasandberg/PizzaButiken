@@ -34,6 +34,7 @@
                     @*@if (User.IsInRole("Admin"))
                     {*@
                         <li><a asp-area="" asp-controller="Dishes" asp-action="Index">Administrera rätter</a></li>
+                        <li><a asp-area="" asp-controller="Ingredients" asp-action="Index">Administrera ingredienser</a></li>
                     @*}*@
                     
                 </ul>
@@ -43,15 +44,7 @@
     </nav>
     <div class="topContainer"></div>
     
-    <nav class="navbar dishCategories">
-        <div class="container">
-            <ul class="nav navbar-nav">
-                <li class="dishCategories"><a class="dishCategories" asp-area="" asp-controller="Home" asp-action="Index" asp-route-dishCategoryId="1">Pizza</a></li>
-                <li class="dishCategories"><a class="dishCategories" asp-area="" asp-controller="Home" asp-action="Index" asp-route-dishCategoryId="2">Sallad</a></li>
-                <li class="dishCategories"><a class="dishCategories" asp-area="" asp-controller="Home" asp-action="Index" asp-route-dishCategoryId="3">Pasta</a></li>
-            </ul>
-        </div>
-    </nav>
+    
     
     <div class="container body-content">
         @RenderBody()
