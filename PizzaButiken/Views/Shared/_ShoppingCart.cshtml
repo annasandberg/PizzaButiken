@@ -1,0 +1,24 @@
+﻿@inject PizzaButiken.Services.CartService CartService
+
+
+@{
+    var cart = CartService.GetCartForCurrentSession(Context.Session);
+    var itemsCount = CartService.GetNumberOfItemsInCart(cart.CartId);
+}
+
+<h5>Din varukorg innehåller <b>@itemsCount</b> produkter</h5>
+
+<ul>
+    @if (cart.Items.Count() > 0)
+    {
+        foreach (var di in cart.Items)
+        {
+            <li>
+                @di.Dish.Name @di.Dish.Price
+                <button type="submit" class="remove" name="remove@di.CartItemId"><span class="glyphicon glyphicon-remove" title="Remove"></span></button>
+            </li>
+        }
+    }
+</ul>
+
+

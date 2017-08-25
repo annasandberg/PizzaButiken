@@ -7,21 +7,40 @@ using Microsoft.AspNetCore.Mvc;
 using PizzaButiken.Models;
 using PizzaButiken.Data;
 using Microsoft.EntityFrameworkCore;
+using PizzaButiken.Services;
+using Microsoft.AspNetCore.Http;
 
 namespace PizzaButiken.Controllers
 {
     public class HomeController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly CartService _cartService;
 
-        public HomeController(ApplicationDbContext context)
+        public HomeController(ApplicationDbContext context, CartService cartService)
         {
             _context = context;
+            _cartService = cartService;
         }
 
         public async Task<IActionResult> Index(int dishCategoryId)
         {
             return View(await _context.Dishes.Where(x => x.DishCategoryId == dishCategoryId).ToListAsync());
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ShoppingCartAction(IFormCollection form)
+        {
+            var key = form.Keys.FirstOrDefault(k => k.Contains("-"));
+            var dashPos = key.IndexOf("-");
+            var action = key.Substring(0, dashPos);
+            var id = int.Parse(key.Substring(dashPos + 1));
+            switch (action)
+            {
+                case "add": await _cartService.AddItemForCurrentSession(HttpContext.Session, id); break;
+      
+            }
+            return RedirectToAction("Index");
         }
 
         public IActionResult About()

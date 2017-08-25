@@ -35,9 +35,17 @@ namespace PizzaButiken
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 
+            services.AddDistributedMemoryCache();
+            services.AddSession(options => {
+                options.IdleTimeout = TimeSpan.FromSeconds(600);
+                options.Cookie.HttpOnly = true; });
+
             // Add application services.
             services.AddTransient<IEmailSender, EmailSender>();
             services.AddTransient<DBInitializer>();
+            services.AddTransient<CartService>();
+            services.AddTransient<UserManager<ApplicationUser>>();
+            services.AddTransient<RoleManager<IdentityRole>>();
 
             services.AddMvc();
         }
@@ -59,6 +67,8 @@ namespace PizzaButiken
             app.UseStaticFiles();
 
             app.UseAuthentication();
+
+            app.UseSession();
 
             app.UseMvc(routes =>
             {
