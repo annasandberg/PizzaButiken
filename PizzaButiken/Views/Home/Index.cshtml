@@ -5,15 +5,7 @@
     ViewData["Title"] = "PizzaButiken";
 }
 
-<nav class="navbar dishCategories">
-    <div class="container">
-        <ul class="nav navbar-nav">
-            <li class="dishCategories"><a class="dishCategories" asp-area="" asp-controller="Home" asp-action="Index" asp-route-dishCategoryId="1">Pizza</a></li>
-            <li class="dishCategories"><a class="dishCategories" asp-area="" asp-controller="Home" asp-action="Index" asp-route-dishCategoryId="2">Sallad</a></li>
-            <li class="dishCategories"><a class="dishCategories" asp-area="" asp-controller="Home" asp-action="Index" asp-route-dishCategoryId="3">Pasta</a></li>
-        </ul>
-    </div>
-</nav>
+@{Html.RenderPartial("_DishCategoriesNavBarPartial.cshtml");}
 
 <form asp-controller="Home" asp-action="ShoppingCartAction" method=Post>
     <div class="row">
