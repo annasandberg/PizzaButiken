@@ -1,10 +1,15 @@
 ﻿@model PizzaButiken.Models.Dish
+@inject PizzaButiken.Services.DishCategoryService DishCategoryService
 
 @{
     ViewData["Title"] = "Details";
 }
 
 <h2>Details</h2>
+
+@{ 
+    var dishCategory = DishCategoryService.GetDishCategory(Model.DishCategoryId);
+}
 
 <div>
     <h4>Dish</h4>
@@ -21,6 +26,12 @@
         </dt>
         <dd>
             @Html.DisplayFor(model => model.Price)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.DishCategory)
+        </dt>
+        <dd>
+            @dishCategory.Name
         </dd>
         <dt>
             @Html.DisplayNameFor(model => model.DishIngredients)

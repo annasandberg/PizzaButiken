@@ -1,10 +1,15 @@
 ﻿@model PizzaButiken.Models.Dish
+@inject PizzaButiken.Services.DishCategoryService DishCategoryService
 
 @{
     ViewData["Title"] = "Edit";
 }
 
 <h2>Edit</h2>
+
+@{ 
+    var dishCategories = DishCategoryService.GetAllDishCategories();
+}
 
 <h4>Dish</h4>
 <hr />
@@ -22,6 +27,14 @@
                 <label asp-for="Price" class="control-label"></label>
                 <input asp-for="Price" class="form-control" />
                 <span asp-validation-for="Price" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DishCategoryId" class="control-label"></label>
+                <select asp-for="DishCategoryId" class="form-control"
+                        asp-items="@(new SelectList(dishCategories,"DishCategoryId","Name"))">
+                    <option>Please select one</option>
+                </select>
+                <span asp-validation-for="DishCategoryId" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-default" />

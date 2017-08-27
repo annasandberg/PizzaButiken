@@ -13,7 +13,9 @@ namespace PizzaButiken.Models
         public int Price { get; set; }
         [Display (Name = "Ingredienser")]
         public List<DishIngredient> DishIngredients { get; set; }
+        [Display(Name = "Dish Category")]
         public int DishCategoryId { get; set; }
+        [Display(Name = "Dish Category")]
         public DishCategory DishCategory { get; set; }
     }
 }
