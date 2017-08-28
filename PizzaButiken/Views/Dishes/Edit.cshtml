@@ -1,5 +1,6 @@
 ﻿@model PizzaButiken.Models.Dish
 @inject PizzaButiken.Services.DishCategoryService DishCategoryService
+@inject PizzaButiken.Services.IngredientService IngredientService
 
 @{
     ViewData["Title"] = "Edit";
@@ -9,6 +10,8 @@
 
 @{ 
     var dishCategories = DishCategoryService.GetAllDishCategories();
+    var ingredients = IngredientService.GetAllIngredients();
+    var dishIngredients = IngredientService.GetAllIngredientsForEditingDish(Model.DishId);
 }
 
 <h4>Dish</h4>
@@ -35,6 +38,18 @@
                     <option>Please select one</option>
                 </select>
                 <span asp-validation-for="DishCategoryId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DishIngredients" class="control-label"></label>
+                @{
+                    for (int i = 0; i < ingredients.Count(); i++)
+                    {
+                        <div>
+                            <input asp-for="@ingredients[i].Enabled" type="checkbox" name="ingredient-@ingredients[i].IngredientId" />
+                            <label asp-for="@ingredients[i].IngredientId">@ingredients[i].Name</label>
+                        </div>
+                    }
+                }
             </div>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-default" />

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PizzaButiken.Data;
 using PizzaButiken.Models;
+using Microsoft.AspNetCore.Http;
 
 namespace PizzaButiken.Controllers
 {
@@ -56,11 +57,26 @@ namespace PizzaButiken.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("DishId,Name,Price,DishCategoryId")] Dish dish)
+        public async Task<IActionResult> Create([Bind("DishId,Name,Price,DishCategoryId")] Dish dish, IFormCollection form)
         {
             if (ModelState.IsValid)
             {
                 _context.Add(dish);
+                await _context.SaveChangesAsync();
+
+                var key = form.Keys.FirstOrDefault(k => k.Contains("ingredient-"));
+                var dashPos = key.IndexOf("-");
+                var checkedIngredients = form.Keys.Where(k => k.Contains("ingredient-"));
+
+                dish.DishIngredients = new List<DishIngredient>();
+
+                foreach (var ingredient in checkedIngredients)
+                {
+                    var id = int.Parse(ingredient.Substring(dashPos + 1));
+                    dish.DishIngredients.Add(new DishIngredient { IngredientId = id, Enabled = true, DishId = dish.DishId });
+                }
+
+                _context.Update(dish);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
@@ -88,7 +104,7 @@ namespace PizzaButiken.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("DishId,Name,Price,DishCategoryId")] Dish dish)
+        public async Task<IActionResult> Edit(int id, [Bind("DishId,Name,Price,DishCategoryId")] Dish dish, IFormCollection form)
         {
             if (id != dish.DishId)
             {
@@ -99,6 +115,21 @@ namespace PizzaButiken.Controllers
             {
                 try
                 {
+                    var dishIngredients = _context.DishIngredients.Where(x => x.DishId == dish.DishId);
+                    _context.DishIngredients.RemoveRange(dishIngredients);
+                    _context.Update(dish);
+                    await _context.SaveChangesAsync();
+
+                    var key = form.Keys.FirstOrDefault(k => k.Contains("ingredient-"));
+                    var dashPos = key.IndexOf("-");
+                    var checkedIngredients = form.Keys.Where(k => k.Contains("ingredient-"));
+                    dish.DishIngredients = new List<DishIngredient>();
+
+                    foreach (var ingredient in checkedIngredients)
+                    {
+                        var checkboxId = int.Parse(ingredient.Substring(dashPos + 1));
+                        dish.DishIngredients.Add(new DishIngredient { IngredientId = checkboxId, Enabled = true, DishId = dish.DishId });
+                    }
                     _context.Update(dish);
                     await _context.SaveChangesAsync();
                 }

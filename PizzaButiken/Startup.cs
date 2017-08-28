@@ -45,6 +45,7 @@ namespace PizzaButiken
             services.AddTransient<DBInitializer>();
             services.AddTransient<CartService>();
             services.AddTransient<DishCategoryService>();
+            services.AddTransient<IngredientService>();
             services.AddTransient<UserManager<ApplicationUser>>();
             services.AddTransient<RoleManager<IdentityRole>>();
 

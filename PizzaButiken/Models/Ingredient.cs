@@ -11,5 +11,6 @@ namespace PizzaButiken.Models
         public string Name { get; set; }
         public List<DishIngredient> DishIngredients { get; set; }
         public List<CartItemIngredient> CartItemIngredients { get; set; }
+        public bool Enabled { get; set; }
     }
 }
