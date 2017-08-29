@@ -1,0 +1,36 @@
+﻿@model PizzaButiken.Models.CartItem
+@inject PizzaButiken.Services.IngredientService IngredientService
+
+@{
+    ViewData["Title"] = "Customize";
+}
+<h2>Customize</h2>
+@{
+    var ingredients = IngredientService.GetAllIngredients();
+    var cartItemIngredients = IngredientService.GetAllIngredientsForCustomizingCartItem(Model.CartItemId);
+}
+<h4>@Model.Dish.Name</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-controller="Home" asp-action="CustomizeCartItem">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="CartItemId" />
+            <div class="form-group">
+                <label asp-for="CartItmeIngredients" class="control-label"></label>
+                @{
+                    for (int i = 0; i < ingredients.Count(); i++)
+                    {
+                        <div>
+                            <input asp-for="@ingredients[i].Enabled" type="checkbox" name="ingredient-@ingredients[i].IngredientId" />
+                            <label asp-for="@ingredients[i].IngredientId">@ingredients[i].Name</label>
+                        </div>
+                    }
+                }
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-default" />
+            </div>
+        </form>
+    </div>
+</div>

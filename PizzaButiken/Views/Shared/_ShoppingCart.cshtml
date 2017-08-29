@@ -15,7 +15,15 @@
         {
             <li>
                 @di.Dish.Name @di.Dish.Price
-                <button type="submit" class="remove" name="remove-@di.CartItemId"><span class="glyphicon glyphicon-remove" title="Remove"></span></button>
+                <a asp-action="CustomizeCartItem" asp-route-id="@di.DishId">
+                    <span class="glyphicon glyphicon-adjust"></span>
+                </a>
+                <button type="submit" class="remove" name="remove-@di.CartItemId">
+                    <span class="glyphicon glyphicon-remove" title="Remove"></span>
+                </button>
+                
+                
+                <button type="submit" name="customize-@di.CartItemId"><span class="glyphicon glyphicon-adjust"></span></button>
             </li>
         }
     }

@@ -55,13 +55,25 @@ namespace PizzaButiken.Services
             var carts = _context.Carts.Include(x => x.Items).ThenInclude(d => d.Dish);
 
             var cart = GetCartForCurrentSession(session);
-            var dish = _context.Dishes.Find(dishId);
+            var dishes = _context.Dishes.Include(d => d.DishIngredients).ThenInclude(i => i.Ingredient);
+            var dish = dishes.FirstOrDefault(x => x.DishId == dishId);
+            //var dishIngredients = dish.DishIngredients;
+            var cartItemIngredients = new List<CartItemIngredient>();
+            foreach (var ingredient in dish.DishIngredients)
+            {
+                cartItemIngredients.Add(new CartItemIngredient
+                {
+                    IngredientId = ingredient.IngredientId,
+                    Enabled = true
+                });
+            }
 
             cart.Items = cart.Items ?? new List<CartItem>();
             cart.Items.Add(new CartItem()
             {
                 Dish = dish,
-                Quantity = 1
+                Quantity = 1,
+                CartItmeIngredients = cartItemIngredients
             });
 
             if (carts.Any(x => x.CartId == cart.CartId))
@@ -74,6 +86,11 @@ namespace PizzaButiken.Services
             }
 
             _context.SaveChanges();
+        }
+
+        public void CustomizeItemForCurrentsession(ISession session, int cartItemId)
+        {
+
         }
 
         public void DeleteItemForCurrentSession(ISession session, int cartItemId)
