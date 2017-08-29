@@ -29,7 +29,7 @@ namespace PizzaButiken.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> ShoppingCartAction(IFormCollection form)
+        public IActionResult ShoppingCartAction(IFormCollection form)
         {
             var key = form.Keys.FirstOrDefault(k => k.Contains("-"));
             var dashPos = key.IndexOf("-");
@@ -37,9 +37,10 @@ namespace PizzaButiken.Controllers
             var id = int.Parse(key.Substring(dashPos + 1));
             switch (action)
             {
-                case "add": await _cartService.AddItemForCurrentSession(HttpContext.Session, id); break;
-      
+                case "add": _cartService.AddItemForCurrentSession(HttpContext.Session, id); break;
+                case "remove": _cartService.DeleteItemForCurrentSession(HttpContext.Session, id); break;
             }
+
             return RedirectToAction("Index");
         }
 

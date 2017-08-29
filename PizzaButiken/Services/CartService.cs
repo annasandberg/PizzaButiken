@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using PizzaButiken.Data;
 using PizzaButiken.Models;
 using System;
@@ -21,8 +22,9 @@ namespace PizzaButiken.Services
         {
             if (!session.GetInt32("CartId").HasValue)
             {
-                var tempCart = new Cart { Items = new List<CartItem>() };
-                _context.Carts.Add(tempCart); _context.SaveChanges();
+                var tempCart = new Cart ();
+                _context.Carts.Add(tempCart);
+                _context.SaveChanges();
                 session.SetInt32("CartId", tempCart.CartId);
             }
             var CartId = session.GetInt32("CartId").Value;
@@ -32,8 +34,9 @@ namespace PizzaButiken.Services
         public Cart GetCartForCurrentSession(ISession session)
         {
             var cartId = GetTempCartId(session);
-            var cart = _context.Carts.Find(cartId);
-            cart.Items = cart.Items ?? new List<CartItem>();
+            var carts = _context.Carts.Include(i => i.Items).ThenInclude(d => d.Dish);
+
+            var cart = carts.FirstOrDefault(x => x.CartId == cartId);
 
             return cart;
         }
@@ -42,24 +45,44 @@ namespace PizzaButiken.Services
         {
             var cart = _context.Carts.Find(cartId);
 
+            cart.Items = cart.Items ?? new List<CartItem>();
+
             return cart.Items.Count();
         }
 
-        public async Task AddItemForCurrentSession(ISession session, int dishId)
+        public void AddItemForCurrentSession(ISession session, int dishId)
         {
-            var cartItem = new CartItem();
-            cartItem.CartId = GetTempCartId(session);
-            cartItem.Dish = _context.Dishes.Find(dishId);
-            cartItem.Quantity = 1;
-            _context.Add(cartItem);
-            await _context.SaveChangesAsync();
+            var carts = _context.Carts.Include(x => x.Items).ThenInclude(d => d.Dish);
+
+            var cart = GetCartForCurrentSession(session);
+            var dish = _context.Dishes.Find(dishId);
+
+            cart.Items = cart.Items ?? new List<CartItem>();
+            cart.Items.Add(new CartItem()
+            {
+                Dish = dish,
+                Quantity = 1
+            });
+
+            if (carts.Any(x => x.CartId == cart.CartId))
+            {
+                _context.Update(cart);
+            }
+            else
+            {
+                _context.Add(cart);
+            }
+
+            _context.SaveChanges();
         }
 
-        public async Task DeleteItemForCurrentSession(ISession session, int cartItemId)
+        public void DeleteItemForCurrentSession(ISession session, int cartItemId)
         {
             var cartItem = _context.CartItems.Find(cartItemId);
+            var cart = GetCartForCurrentSession(session);
             _context.CartItems.Remove(cartItem);
-            await _context.SaveChangesAsync();
+            _context.Update(cart);
+            _context.SaveChanges();
         }
     }
 }
