@@ -20,7 +20,7 @@ namespace PizzaButiken.Controllers
 
         public async Task <IActionResult> Index()
         {
-            return View(await _context.DishCategories.ToListAsync());
+            return View(await _context.DishCategories.OrderBy(dc => dc.Name).ToListAsync());
         }
 
         public IActionResult Create()

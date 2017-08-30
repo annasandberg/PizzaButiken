@@ -19,14 +19,14 @@ namespace PizzaButiken.Services
 
         public List<Ingredient> GetAllIngredients()
         {
-            return _context.Ingredients.ToList();
+            return _context.Ingredients.OrderBy(i => i.Name).ToList();
         }
 
         public List<Ingredient> GetAllIngredientsForEditingDish(int dishId)
         {
             var dish = GetDish(dishId).Result;
             var dishIngredients = dish.DishIngredients;
-            var ingredients = _context.Ingredients.ToList();
+            var ingredients = _context.Ingredients.OrderBy(i => i.Name).ToList();
 
             foreach (var ingredient in ingredients)
             {
@@ -42,9 +42,7 @@ namespace PizzaButiken.Services
         public List<Ingredient> GetAllIngredientsForCustomizingCartItem(int cartItemId)
         {
             var cartItem = GetCartItem(cartItemId).Result;
-            //var dish = GetDish(cartItem.DishId).Result;
-            //var dishIngredients = dish.DishIngredients;
-            var ingredients = _context.Ingredients.ToList();
+            var ingredients = _context.Ingredients.OrderBy(i => i.Name).ToList();
 
             foreach (var ingredient in ingredients)
             {
@@ -52,10 +50,6 @@ namespace PizzaButiken.Services
                 {
                     ingredient.Enabled = true;
                 }
-                //if (dishIngredients.Any(x => x.IngredientId == ingredient.IngredientId))
-                //{
-                //    ingredient.Enabled = true;
-                //}
             }
 
             return ingredients;

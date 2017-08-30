@@ -37,7 +37,7 @@
             @Html.DisplayNameFor(model => model.DishIngredients)
         </dt>
 
-        @foreach (var di in Model.DishIngredients)
+        @foreach (var di in Model.DishIngredients.OrderBy(di => di.Ingredient.Name))
             {
             <dd>
                 @di.Ingredient.Name
