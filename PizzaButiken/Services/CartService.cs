@@ -89,7 +89,7 @@ namespace PizzaButiken.Services
             _context.SaveChanges();
         }
 
-        public void CustomizeItemForCurrentsession(ISession session, CartItem cartItem, IFormCollection form)
+        public void CustomizeItemForCurrentsession(CartItem cartItem, IFormCollection form)
         {
             try
             {

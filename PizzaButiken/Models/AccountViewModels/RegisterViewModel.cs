@@ -23,5 +23,20 @@ namespace PizzaButiken.Models.AccountViewModels
         [Display(Name = "Confirm password")]
         [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
+
+        [StringLength(100, ErrorMessage = "The {0} cannot be longer than {1} characters.")]
+        [Display(Name = "Name")]
+        public string CustomerName { get; set; }
+
+        [StringLength(100, ErrorMessage = "The {0} cannot be longer than {1} characters.")]
+        public string Street { get; set; }
+
+        [StringLength(6, ErrorMessage = "The {0} cannot be longer than {1} characters.")]
+        [Display(Name ="Postal Code")]
+        public string PostalCode { get; set; }
+
+        [StringLength(100, ErrorMessage = "The {0} cannot be longer than {1} characters.")]
+        public string City { get; set; }
     }
 }
+

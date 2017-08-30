@@ -220,7 +220,14 @@ namespace PizzaButiken.Controllers
             ViewData["ReturnUrl"] = returnUrl;
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
+                var user = new ApplicationUser {
+                    UserName = model.Email,
+                    Email = model.Email,
+                    CustomerName = model.CustomerName,
+                    Street = model.Street,
+                    PostalCode = model.PostalCode,
+                    City = model.City
+                };
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
