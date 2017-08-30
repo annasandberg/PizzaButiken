@@ -11,33 +11,29 @@
     <div class="row">
         <div class="col-md-8">
             <table class="table">
-                <thead>
-                    <tr>
-                        <th>
-                            @Html.DisplayNameFor(model => model.Name)
-                        </th>
-                        <th>
-                            @Html.DisplayNameFor(model => model.Price)
-                        </th>
-                        <th></th>
-                        <th></th>
-                    </tr>
-                </thead>
                 <tbody>
                     @foreach (var item in Model)
                     {
                         <tr>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.Name)
+                            <td class="col-md-2">
+                                <b>@Html.DisplayFor(modelItem => item.Name)</b>
+                                <br />
+                                <img class="dishImage" src="~/images/pizza.jpg"/>
                             </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.Price)
+                            <td class="col-md-3">
+                                @foreach (var ingredient in item.DishIngredients)
+                                {
+                                    <p>@ingredient.Ingredient.Name</p>
+                                }
                             </td>
-                            <td>
-                                <button type="submit" name="customize-@item.DishId">Anpassa</button>
+                            <td class="col-md-1">
+                                @Html.DisplayFor(modelItem => item.Price) SEK
                             </td>
-                            <td>
-                                <button type="submit" name="add-@item.DishId">
+                            <td class="col-md-1">
+                                <button type="submit" name="customize-@item.DishId" title="Customize"><span class="glyphicon glyphicon-adjust"></span></button>
+                            </td>
+                            <td class="col-md-1">
+                                <button type="submit" name="add-@item.DishId" title="Add to cart">
                                 <span class="glyphicon glyphicon-shopping-cart"></span>
                                 </button>
                             </td>

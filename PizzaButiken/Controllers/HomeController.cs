@@ -25,7 +25,7 @@ namespace PizzaButiken.Controllers
 
         public async Task<IActionResult> Index(int dishCategoryId)
         {
-            return View(await _context.Dishes.Where(x => x.DishCategoryId == dishCategoryId).ToListAsync());
+            return View(await _context.Dishes.Where(x => x.DishCategoryId == dishCategoryId).Include(di => di.DishIngredients).ThenInclude(i => i.Ingredient).ToListAsync());
         }
 
         [HttpPost]

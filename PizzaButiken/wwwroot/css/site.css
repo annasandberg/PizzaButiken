@@ -58,3 +58,8 @@ a:hover{
     color: black !important;
     font-weight: bold !important;
 }
+
+.dishImage{
+    width:100px;
+    height:100px;
+}
