@@ -43,3 +43,18 @@
     color: black !important;
     font-weight: bold !important;
 }
+
+.navbar-inverse :hover{
+    color: white !important;
+}
+
+a:hover{
+    color:dimgray !important;
+    background-color: transparent !important;
+}
+
+.admin{
+    background-color: lightgray;
+    color: black !important;
+    font-weight: bold !important;
+}

@@ -30,12 +30,10 @@
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
-                    <li><a asp-area="" asp-controller="Home" asp-action="Index">Meny</a></li>
+                    <li><a asp-area="" asp-controller="Home" asp-action="Index">Menu</a></li>
                     @*@if (User.IsInRole("Admin"))
                     {*@
-                        <li><a asp-area="" asp-controller="Dishes" asp-action="Index">Administrera rätter</a></li>
-                        <li><a asp-area="" asp-controller="Ingredients" asp-action="Index">Administrera ingredienser</a></li>
-                        <li><a asp-area="" asp-controller="DishCategories" asp-action="Index">Administrera kategorier</a></li>
+                        <li><a asp-area="" asp-controller="Home" asp-action="Admin">Admin</a></li>
                     @*}*@
                     
                 </ul>
@@ -43,10 +41,16 @@
             </div>
         </div>
     </nav>
-    <div class="topContainer"></div>
-    
-    
-    
+    @if (!User.IsInRole("Admin"))
+    {
+        <div class="topContainer"></div>
+    }
+
+    @if (User.IsInRole("Admin"))
+    {
+        Html.RenderPartial("_AdminNavBar.cshtml");
+    }
+
     <div class="container body-content">
         @RenderBody()
         <hr />

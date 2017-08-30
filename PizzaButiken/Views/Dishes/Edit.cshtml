@@ -10,7 +10,6 @@
 
 @{ 
     var dishCategories = DishCategoryService.GetAllDishCategories();
-    var ingredients = IngredientService.GetAllIngredients();
     var dishIngredients = IngredientService.GetAllIngredientsForEditingDish(Model.DishId);
 }
 
@@ -42,11 +41,11 @@
             <div class="form-group">
                 <label asp-for="DishIngredients" class="control-label"></label>
                 @{
-                    for (int i = 0; i < ingredients.Count(); i++)
+                    for (int i = 0; i < dishIngredients.Count(); i++)
                     {
                         <div>
-                            <input asp-for="@ingredients[i].Enabled" type="checkbox" name="ingredient-@ingredients[i].IngredientId" />
-                            <label asp-for="@ingredients[i].IngredientId">@ingredients[i].Name</label>
+                            <input asp-for="@dishIngredients[i].Enabled" type="checkbox" name="ingredient-@dishIngredients[i].IngredientId" />
+                            <label asp-for="@dishIngredients[i].IngredientId">@dishIngredients[i].Name</label>
                         </div>
                     }
                 }
