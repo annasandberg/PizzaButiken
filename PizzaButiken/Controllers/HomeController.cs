@@ -39,7 +39,7 @@ namespace PizzaButiken.Controllers
             {
                 case "add": _cartService.AddItemForCurrentSession(HttpContext.Session, id); break;
                 case "remove": _cartService.DeleteItemForCurrentSession(HttpContext.Session, id); break;
-                case "customize": _cartService.CustomizeItemForCurrentsession(HttpContext.Session, id); break;
+               // case "customize": _cartService.CustomizeItemForCurrentsession(HttpContext.Session, id); break;
             }
 
             return RedirectToAction("Index");
@@ -55,13 +55,24 @@ namespace PizzaButiken.Controllers
                 .Include(c => c.CartItmeIngredients)
                 .ThenInclude(i => i.Ingredient)
                 .SingleOrDefaultAsync(x => x.CartItemId == id);
-            //var cartItem = await _context.CartItems.SingleOrDefaultAsync(m => m.CartItemId == id);
+
             if (cartItem == null)
             {
                 return NotFound();
             }
             return View(cartItem);
 
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult CustomizeCartItem([Bind("CartItemId")]CartItem cartItem, IFormCollection form)
+        {
+            if (ModelState.IsValid)
+            {
+                _cartService.CustomizeItemForCurrentsession(HttpContext.Session, cartItem, form);
+            }
+            return RedirectToAction("Index");
         }
 
         public IActionResult About()

@@ -42,16 +42,20 @@ namespace PizzaButiken.Services
         public List<Ingredient> GetAllIngredientsForCustomizingCartItem(int cartItemId)
         {
             var cartItem = GetCartItem(cartItemId).Result;
-            var dish = GetDish(cartItem.DishId).Result;
-            var dishIngredients = dish.DishIngredients;
+            //var dish = GetDish(cartItem.DishId).Result;
+            //var dishIngredients = dish.DishIngredients;
             var ingredients = _context.Ingredients.ToList();
 
             foreach (var ingredient in ingredients)
             {
-                if (dishIngredients.Any(x => x.IngredientId == ingredient.IngredientId))
+                if (cartItem.CartItmeIngredients.Any(x => x.IngredientId == ingredient.IngredientId))
                 {
                     ingredient.Enabled = true;
                 }
+                //if (dishIngredients.Any(x => x.IngredientId == ingredient.IngredientId))
+                //{
+                //    ingredient.Enabled = true;
+                //}
             }
 
             return ingredients;
