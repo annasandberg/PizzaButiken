@@ -74,6 +74,7 @@ namespace PizzaButiken.Services
                 Dish = dish,
                 Name = dish.Name,
                 Quantity = 1,
+                Price = dish.Price,
                 CartItmeIngredients = cartItemIngredients
             });
 
@@ -93,7 +94,12 @@ namespace PizzaButiken.Services
         {
             try
             {
-                var cartItems = _context.CartItems.Include(x => x.CartItmeIngredients).ThenInclude(i => i.Ingredient);
+                var cartItems = _context.CartItems
+                    .Include(x => x.CartItmeIngredients)
+                    .ThenInclude(i => i.Ingredient)
+                    .ThenInclude(di => di.DishIngredients)
+                    .ThenInclude(d=> d.Dish);
+
                 var customizedCartItem = cartItems.FirstOrDefault(c => c.CartItemId == cartItem.CartItemId);
 
                 var cartItemIngredients = customizedCartItem.CartItmeIngredients;
@@ -105,14 +111,29 @@ namespace PizzaButiken.Services
                 var dashPos = key.IndexOf("-");
                 var checkedIngredients = form.Keys.Where(k => k.Contains("ingredient-"));
 
-                customizedCartItem.Name = "Specialized" + customizedCartItem.Name;
+                if (!customizedCartItem.Name.Contains("Specialized"))
+                {
+                    customizedCartItem.Name = "Specialized" + customizedCartItem.Name;
+                }
+                
                 customizedCartItem.CartItmeIngredients = new List<CartItemIngredient>();
+
+                var ingredients = _context.Ingredients.ToList();
+                int extraIngredientsPriceSum = 0;
 
                 foreach (var ingredient in checkedIngredients)
                 {
                     var checkboxId = int.Parse(ingredient.Substring(dashPos + 1));
                     customizedCartItem.CartItmeIngredients.Add(new CartItemIngredient { IngredientId = checkboxId, Enabled = true, CartItemId = cartItem.CartItemId });
+
+                    if (!customizedCartItem.Dish.DishIngredients.Any(i => i.IngredientId == checkboxId))
+                    {
+                        extraIngredientsPriceSum += ingredients.FirstOrDefault(i => i.IngredientId == checkboxId).Price;
+                    }
                 }
+
+                customizedCartItem.Price = customizedCartItem.Dish.Price + extraIngredientsPriceSum;
+
                 _context.Update(customizedCartItem);
                 _context.SaveChanges();
             }

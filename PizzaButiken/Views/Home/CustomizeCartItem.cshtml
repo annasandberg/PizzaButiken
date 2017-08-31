@@ -8,6 +8,7 @@
 @{
     var ingredients = IngredientService.GetAllIngredients();
     var cartItemIngredients = IngredientService.GetAllIngredientsForCustomizingCartItem(Model.CartItemId);
+    var currency = " SEK";
 }
 <h4>@Model.Name</h4>
 <hr />
@@ -23,7 +24,13 @@
                     {
                         <div>
                             <input asp-for="@ingredients[i].Enabled" type="checkbox" name="ingredient-@ingredients[i].IngredientId" />
-                            <label asp-for="@ingredients[i].IngredientId">@ingredients[i].Name</label>
+                            <label asp-for="@ingredients[i].IngredientId">
+                                @ingredients[i].Name
+                                @if (!Model.Dish.DishIngredients.Any(di => di.IngredientId == ingredients[i].IngredientId))
+                                {
+                                    @ingredients[i].Price @currency
+                                }
+                            </label>
                         </div>
                     }
                 }

@@ -14,7 +14,7 @@
         foreach (var di in cart.Items)
         {
             <li>
-                @di.Name @di.Dish.Price
+                @di.Name @di.Price
                 <a asp-action="CustomizeCartItem" asp-route-id="@di.DishId">
                     <span class="glyphicon glyphicon-adjust"></span>
                 </a>
