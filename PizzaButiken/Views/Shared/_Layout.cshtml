@@ -33,7 +33,9 @@
                     <li><a asp-area="" asp-controller="Home" asp-action="Index">Menu</a></li>
                     @*@if (User.IsInRole("Admin"))
                     {*@
-                        <li><a asp-area="" asp-controller="Home" asp-action="Admin">Admin</a></li>
+                    <li><a asp-area="" asp-controller="Dishes" asp-action="Index">Dishes</a></li>
+                    <li><a asp-area="" asp-controller="Ingredients" asp-action="Index">Ingredients</a></li>
+                    <li><a asp-area="" asp-controller="DishCategories" asp-action="Index">Categories</a></li>
                     @*}*@
                     
                 </ul>
@@ -41,18 +43,20 @@
             </div>
         </div>
     </nav>
-    @if (!User.IsInRole("Admin"))
-    {
+    @*@if (!User.IsInRole("Admin"))
+    {*@
         <div class="topContainer"></div>
-    }
+    @*}*@
 
-    @if (User.IsInRole("Admin"))
+    @*@if (User.IsInRole("Admin"))
     {
         Html.RenderPartial("_AdminNavBar.cshtml");
-    }
+    }*@
 
     <div class="container body-content">
-        @RenderBody()
+        @RenderBody()    
+    </div>
+    <div class="container body-content">
         <hr />
         <footer>
             <p>&copy; 2017 - PizzaButiken</p>

@@ -9,26 +9,35 @@
 <p>
     <a asp-action="Create">Create New</a>
 </p>
-<table class="table">
-    <thead>
-        <tr>
-                <th>
+<div class="col-md-6">
+    <table class="table">
+        <thead>
+            <tr>
+                <th class="col-md-3">
                     @Html.DisplayNameFor(model => model.Name)
                 </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.IngredientId">Edit</a> |
-                <a asp-action="Delete" asp-route-id="@item.IngredientId">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+                <th class="col-md-1">
+                    @Html.DisplayNameFor(model => model.Price)
+                </th>
+                <th class="col-md-2"></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td class="col-md-3">
+                        @Html.DisplayFor(modelItem => item.Name)
+                    </td>
+                    <td class="col-md-1">
+                        @Html.DisplayFor(modelItem => item.Price)
+                    </td>
+                    <td class="col-md-2">
+                        <a asp-action="Edit" asp-route-id="@item.IngredientId">Edit</a> |
+                        <a asp-action="Delete" asp-route-id="@item.IngredientId">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
