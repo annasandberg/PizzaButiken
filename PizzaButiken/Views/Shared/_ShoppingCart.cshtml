@@ -6,27 +6,29 @@
     var itemsCount = CartService.GetNumberOfItemsInCart(cart.CartId);
 }
 
-<h5>Din varukorg innehåller <b>@itemsCount</b> produkter</h5>
-
-<ul>
+    <h5>Your shopping cart contains <b>@itemsCount</b> products</h5>
     @if (cart.Items.Count() > 0)
     {
-        foreach (var di in cart.Items)
-        {
-            <li>
-                @di.Name @di.Price
-                <a asp-action="CustomizeCartItem" asp-route-id="@di.DishId">
-                    <span class="glyphicon glyphicon-adjust"></span>
-                </a>
-                <button type="submit" class="remove" name="remove-@di.CartItemId">
-                    <span class="glyphicon glyphicon-remove" title="Remove"></span>
-                </button>
-                
-                
-                <button type="submit" name="customize-@di.CartItemId"><span class="glyphicon glyphicon-adjust"></span></button>
-            </li>
-        }
+        <table class="table">
+            @foreach (var di in cart.Items)
+            {
+                <tr>
+                    <td class="col-md-2">@di.Name @di.Price <b>(@di.Quantity)</b></td>
+                    <td class="col-md-1"><a asp-action="CustomizeCartItem" asp-route-id="@di.DishId" title="Customize">
+                        <span class="glyphicon glyphicon-adjust"></span>
+                        </a>
+                    </td>
+                    <td class="col-md-1">
+                        <button type="submit" class="remove" name="remove-@di.CartItemId">
+                            <span class="glyphicon glyphicon-remove" title="Remove"></span>
+                        </button>
+                    </td>
+                </tr>
+            }
+        </table>       
     }
-</ul>
+    <h5><b>Total: @cart.Items.Sum(x => x.Price * x.Quantity) SEK</b></h5>
+
+
 
 

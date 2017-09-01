@@ -34,7 +34,7 @@ namespace PizzaButiken.Services
         public Cart GetCartForCurrentSession(ISession session)
         {
             var cartId = GetTempCartId(session);
-            var carts = _context.Carts.Include(i => i.Items).ThenInclude(d => d.Dish);
+            var carts = _context.Carts.Include(i => i.Items).ThenInclude(ci => ci.CartItmeIngredients).ThenInclude(x => x.CartItem).ThenInclude(d => d.Dish);
 
             var cart = carts.FirstOrDefault(x => x.CartId == cartId);
 
@@ -47,36 +47,27 @@ namespace PizzaButiken.Services
 
             cart.Items = cart.Items ?? new List<CartItem>();
 
-            return cart.Items.Count();
+            return cart.Items.Sum(x=>x.Quantity);
         }
 
         public void AddItemForCurrentSession(ISession session, int dishId)
         {
-            var carts = _context.Carts.Include(x => x.Items).ThenInclude(d => d.Dish);
-
             var cart = GetCartForCurrentSession(session);
-            var dishes = _context.Dishes.Include(d => d.DishIngredients).ThenInclude(i => i.Ingredient);
-            var dish = dishes.FirstOrDefault(x => x.DishId == dishId);
-            
-            var cartItemIngredients = new List<CartItemIngredient>();
-            foreach (var ingredient in dish.DishIngredients)
+            var dish = GetDish(dishId);
+
+            var cartItem = GetCartItemIfSame(cart, dish);
+
+            if (!ItemExistsInCart(cartItem))
             {
-                cartItemIngredients.Add(new CartItemIngredient
-                {
-                    IngredientId = ingredient.IngredientId,
-                    Enabled = true
-                });
+                AddNewCartItemToCart(cart, dish);  
+            }
+            else
+            {
+                cartItem.Quantity++;
+                _context.Update(cartItem);
             }
 
-            cart.Items = cart.Items ?? new List<CartItem>();
-            cart.Items.Add(new CartItem()
-            {
-                Dish = dish,
-                Name = dish.Name,
-                Quantity = 1,
-                Price = dish.Price,
-                CartItmeIngredients = cartItemIngredients
-            });
+            var carts = _context.Carts.Include(x => x.Items).ThenInclude(d => d.Dish);
 
             if (carts.Any(x => x.CartId == cart.CartId))
             {
@@ -90,52 +81,55 @@ namespace PizzaButiken.Services
             _context.SaveChanges();
         }
 
-        public void CustomizeItemForCurrentsession(CartItem cartItem, IFormCollection form)
+        public void CustomizeItemForCurrentsession(ISession session, CartItem cartItem, IFormCollection form)
         {
+            var cartItemToCustomize = GetCartItem(cartItem);
+            var cart = GetCartForCurrentSession(session);
+            //var sameSpecialCartItem = GetSameSpecialCartItem(cart, cartItemToCustomize, form);
+
             try
             {
-                var cartItems = _context.CartItems
-                    .Include(x => x.CartItmeIngredients)
-                    .ThenInclude(i => i.Ingredient)
-                    .ThenInclude(di => di.DishIngredients)
-                    .ThenInclude(d=> d.Dish);
-
-                var customizedCartItem = cartItems.FirstOrDefault(c => c.CartItemId == cartItem.CartItemId);
-
-                var cartItemIngredients = customizedCartItem.CartItmeIngredients;
-                _context.CartItemIngredients.RemoveRange(cartItemIngredients);
-                _context.Update(customizedCartItem);
-                _context.SaveChanges();
-
-                var key = form.Keys.FirstOrDefault(k => k.Contains("ingredient-"));
-                var dashPos = key.IndexOf("-");
-                var checkedIngredients = form.Keys.Where(k => k.Contains("ingredient-"));
-
-                if (!customizedCartItem.Name.Contains("Specialized"))
+                if (cartItemToCustomize.Quantity == 1)
                 {
-                    customizedCartItem.Name = "Specialized" + customizedCartItem.Name;
+                    SetCartItemName(cartItemToCustomize);
+
+                    //if (SameSpecialPizzaExistsInCart(cart, cartItemToCustomize, form))
+                    //{
+                    //    sameSpecialCartItem.Quantity++;
+                    //    _context.Update(sameSpecialCartItem);
+                    //    DeleteItemForCurrentSession(session, cartItem.CartItemId);
+                    //}
+                    //else
+                    //{
+                    DeleteCartItemIngredients(cartItemToCustomize);
+                    AddCheckedCartItemIngredients(form, cartItemToCustomize);
+                    _context.Update(cartItemToCustomize);
+                    //}
+
+                    _context.SaveChanges();
                 }
-                
-                customizedCartItem.CartItmeIngredients = new List<CartItemIngredient>();
-
-                var ingredients = _context.Ingredients.ToList();
-                int extraIngredientsPriceSum = 0;
-
-                foreach (var ingredient in checkedIngredients)
+                else if (cartItemToCustomize.Quantity > 1)
                 {
-                    var checkboxId = int.Parse(ingredient.Substring(dashPos + 1));
-                    customizedCartItem.CartItmeIngredients.Add(new CartItemIngredient { IngredientId = checkboxId, Enabled = true, CartItemId = cartItem.CartItemId });
+                    cartItemToCustomize.Quantity--;
+                    _context.Update(cartItemToCustomize);
+                    _context.SaveChanges();
 
-                    if (!customizedCartItem.Dish.DishIngredients.Any(i => i.IngredientId == checkboxId))
-                    {
-                        extraIngredientsPriceSum += ingredients.FirstOrDefault(i => i.IngredientId == checkboxId).Price;
-                    }
+                    var dish = GetDish(cartItemToCustomize.DishId);
+
+                    //if (SameSpecialPizzaExistsInCart(cart, cartItemToCustomize, form))
+                    //{
+                    //    sameSpecialCartItem.Quantity++;
+                    //    _context.Update(sameSpecialCartItem);
+                    //}
+                    //else
+                    //{
+                    AddNewCartItemToCart(cart, dish, form);
+                    //}
+
+                    _context.Update(cart);
+                    _context.SaveChanges();
                 }
 
-                customizedCartItem.Price = customizedCartItem.Dish.Price + extraIngredientsPriceSum;
-
-                _context.Update(customizedCartItem);
-                _context.SaveChanges();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -151,11 +145,6 @@ namespace PizzaButiken.Services
 
         }
 
-        private bool CartItemExists(int id)
-        {
-            return _context.CartItems.Any(e => e.CartItemId == id);
-        }
-
         public void DeleteItemForCurrentSession(ISession session, int cartItemId)
         {
             var cartItem = _context.CartItems.Find(cartItemId);
@@ -164,5 +153,158 @@ namespace PizzaButiken.Services
             _context.Update(cart);
             _context.SaveChanges();
         }
+
+        private Dish GetDish(int dishId)
+        {
+            var dishes = _context.Dishes.Include(d => d.DishIngredients).ThenInclude(i => i.Ingredient);
+            return dishes.FirstOrDefault(x => x.DishId == dishId);
+        }
+
+        private void AddNewCartItemToCart(Cart cart, Dish dish, IFormCollection form = null)
+        {
+            var cartItem = new CartItem
+            {
+                Dish = dish,
+                Name = dish.Name,
+                Quantity = 1,
+                Price = dish.Price,
+            };
+
+            var cartItemIngredients = SetCartItemIngredients(cartItem, dish, form);
+            cartItem.CartItmeIngredients = cartItemIngredients;
+
+            cart.Items = cart.Items ?? new List<CartItem>();
+            cart.Items.Add(cartItem);
+        }
+
+        private List<CartItemIngredient> SetCartItemIngredients(CartItem cartItem = null, Dish dish = null, IFormCollection form = null)
+        {
+            var cartItemIngredients = new List<CartItemIngredient>();
+
+            if (form == null)
+            {
+                foreach (var ingredient in dish.DishIngredients)
+                {
+                    cartItemIngredients.Add(new CartItemIngredient
+                    {
+                        IngredientId = ingredient.IngredientId,
+                        Enabled = true
+                    });
+                }
+            }
+            else
+            {
+                AddCheckedCartItemIngredients(form, cartItem);
+                SetCartItemName(cartItem);
+            }
+            
+            return cartItemIngredients;
+        }
+
+        private bool ItemExistsInCart(CartItem cartItem)
+        {
+            if (cartItem == null)
+            {
+                return false;
+            }
+            return true;
+        }
+
+        private CartItem GetCartItemIfSame(Cart cart, Dish dish)
+        {
+            return cart.Items.FirstOrDefault(ci => ci.DishId == dish.DishId && ci.Name == dish.Name);
+        }
+
+        private CartItem GetCartItem(CartItem cartItem)
+        {
+            var cartItems = _context.CartItems
+                    .Include(x => x.CartItmeIngredients)
+                    .ThenInclude(i => i.Ingredient)
+                    .ThenInclude(di => di.DishIngredients)
+                    .ThenInclude(d => d.Dish);
+            return cartItems.FirstOrDefault(c => c.CartItemId == cartItem.CartItemId);
+        }
+
+        private void DeleteCartItemIngredients(CartItem cartItem)
+        {
+            var cartItemIngredients = cartItem.CartItmeIngredients;
+            _context.CartItemIngredients.RemoveRange(cartItemIngredients);
+            _context.SaveChanges();
+        }
+
+        private List<int> GetCheckedIngredients(IFormCollection form)
+        {
+            var key = form.Keys.FirstOrDefault(k => k.Contains("ingredient-"));
+            var dashPos = key.IndexOf("-");
+            var checkedIngredients = form.Keys.Where(k => k.Contains("ingredient-"));
+
+            var checkedIds = new List<int>();
+
+            foreach (var ingredient in checkedIngredients)
+            {
+                var checkboxId = int.Parse(ingredient.Substring(dashPos + 1));
+                checkedIds.Add(checkboxId);
+            }
+            return checkedIds;
+        }
+
+        private void AddCheckedCartItemIngredients(IFormCollection form, CartItem cartItem)
+        {
+            var checkedIngredients = GetCheckedIngredients(form);
+            cartItem.CartItmeIngredients = new List<CartItemIngredient>();
+
+            var ingredients = _context.Ingredients.ToList();
+            int extraIngredientsPriceSum = 0;
+
+            foreach (var ingredientId in checkedIngredients)
+            {
+                cartItem.CartItmeIngredients.Add(new CartItemIngredient { IngredientId = ingredientId, Enabled = true, CartItemId = cartItem.CartItemId });
+
+                if (!cartItem.Dish.DishIngredients.Any(i => i.IngredientId == ingredientId))
+                {
+                    extraIngredientsPriceSum += ingredients.FirstOrDefault(i => i.IngredientId == ingredientId).Price;
+                }
+            }
+
+            cartItem.Price = cartItem.Dish.Price + extraIngredientsPriceSum;
+        }
+
+        private void SetCartItemName(CartItem cartItem)
+        {
+            if (!cartItem.Name.Contains("Specialized"))
+            {
+                cartItem.Name = "Specialized" + cartItem.Name;
+            }
+        }
+
+        private bool CartItemExists(int id)
+        {
+            return _context.CartItems.Any(e => e.CartItemId == id);
+        }
+
+        //private bool SameSpecialPizzaExistsInCart(Cart cart, CartItem cartItem, IFormCollection form)
+        //{
+        //    var checkedIngredients = GetCheckedIngredients(form);
+        //    var sameCartItem = GetSameSpecialCartItem(cart, cartItem, form);
+        //    if (cart.Items.Any(x => x.Name == cartItem.Name && 
+        //        x.CartItmeIngredients.Count == checkedIngredients.Count() &&
+        //        x.CartItmeIngredients.All(i => i.IngredientId == checkedIngredients.FirstOrDefault(id => id == i.IngredientId))))
+        //    {
+        //        return true;
+        //    }
+        //    return false;
+        //}
+
+        //private CartItem GetSameSpecialCartItem(Cart cart, CartItem cartItem, IFormCollection form)
+        //{
+        //    var checkedIngredients = GetCheckedIngredients(form);
+
+        //    var existingCartItem = cart.Items.FirstOrDefault(x => x.Name == cartItem.Name &&
+        //        x.CartItmeIngredients.Count == checkedIngredients.Count() &&
+        //        x.CartItmeIngredients.All(i => i.IngredientId == checkedIngredients.FirstOrDefault(id => id == i.IngredientId)));
+
+        //    return existingCartItem;
+        //}
+
     }
 }

@@ -72,7 +72,7 @@ namespace PizzaButiken.Controllers
         {
             if (ModelState.IsValid)
             {
-                _cartService.CustomizeItemForCurrentsession(cartItem, form);
+                _cartService.CustomizeItemForCurrentsession(HttpContext.Session, cartItem, form);
             }
             return RedirectToAction("Index");
         }
