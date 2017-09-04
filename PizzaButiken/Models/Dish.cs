@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -17,5 +18,7 @@ namespace PizzaButiken.Models
         public int DishCategoryId { get; set; }
         [Display(Name = "Dish Category")]
         public DishCategory DishCategory { get; set; }
+        public string ImageUrl { get; set; }
+        public byte[] Image { get; set; }
     }
 }

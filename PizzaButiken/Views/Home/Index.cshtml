@@ -18,7 +18,7 @@
                             <td class="col-md-2">
                                 <b>@Html.DisplayFor(modelItem => item.Name)</b>
                                 <br />
-                                <img class="dishImage" src="~/images/pizza.jpg"/>
+                                <img class="dishImage" src="@item.ImageUrl"/>
                             </td>
                             <td class="col-md-3">
                                 @foreach (var ingredient in item.DishIngredients)

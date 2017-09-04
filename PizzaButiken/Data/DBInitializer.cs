@@ -47,13 +47,13 @@ namespace PizzaButiken.Data
                 context.Ingredients.Add(lettuce);
                 context.Ingredients.Add(spaghetti);
 
-                var cappricciosa = new Dish { Name = "Cappricciosa", Price = 79 };
-                var margherita = new Dish { Name = "Margherita", Price = 69 };
-                var hawaii = new Dish { Name = "Hawaii", Price = 85 };
-                var pastaCarbonara = new Dish { Name = "Pasta Carbonara", Price = 75 };
-                var pastaPomodore = new Dish { Name = "Pasta Tomatsås", Price = 69 };
-                var saladHam = new Dish { Name = "Ost och Skinksallad", Price = 75 };
-                var saladPasta = new Dish { Name = "Pastasallad", Price = 79 };
+                var cappricciosa = new Dish { Name = "Cappricciosa", Price = 79, ImageUrl= "images/pizza.jpg" };
+                var margherita = new Dish { Name = "Margherita", Price = 69, ImageUrl = "images/pizza.jpg" };
+                var hawaii = new Dish { Name = "Hawaii", Price = 85, ImageUrl = "images/pizza.jpg" };
+                var pastaCarbonara = new Dish { Name = "Pasta Carbonara", Price = 75, ImageUrl = "images/pasta.jpg" };
+                var pastaPomodore = new Dish { Name = "Pasta Tomatsås", Price = 69, ImageUrl = "images/pasta.jpg" };
+                var saladHam = new Dish { Name = "Ost och Skinksallad", Price = 75, ImageUrl = "images/sallad.jpg" };
+                var saladPasta = new Dish { Name = "Pastasallad", Price = 79, ImageUrl = "images/sallad.jpg" };
 
                 var cappricciosaCheese = new DishIngredient { Dish = cappricciosa, Ingredient = cheese };
                 var cappricciosaHam = new DishIngredient { Dish = cappricciosa, Ingredient = ham };

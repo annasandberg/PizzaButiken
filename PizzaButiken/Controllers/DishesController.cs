@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using PizzaButiken.Data;
 using PizzaButiken.Models;
 using Microsoft.AspNetCore.Http;
+using System.IO;
 
 namespace PizzaButiken.Controllers
 {
@@ -57,10 +58,12 @@ namespace PizzaButiken.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("DishId,Name,Price,DishCategoryId")] Dish dish, IFormCollection form)
+        public async Task<IActionResult> Create([Bind("DishId,Name,Price,DishCategoryId,Image,ImageUrl")] Dish dish, IFormCollection form)
         {
             if (ModelState.IsValid)
             {
+                var filename = form.Files[0].FileName;
+                dish.ImageUrl = filename;
                 _context.Add(dish);
                 await _context.SaveChangesAsync();
 
@@ -104,7 +107,7 @@ namespace PizzaButiken.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("DishId,Name,Price,DishCategoryId")] Dish dish, IFormCollection form)
+        public async Task<IActionResult> Edit(int id, [Bind("DishId,Name,Price,DishCategoryId,ImageUrl")] Dish dish, IFormCollection form)
         {
             if (id != dish.DishId)
             {
@@ -115,6 +118,12 @@ namespace PizzaButiken.Controllers
             {
                 try
                 {
+                    var filename = form.Files[0].FileName;
+                    if (!string.IsNullOrEmpty(filename))
+                    {
+                        dish.ImageUrl = filename;
+                    }
+                    
                     var dishIngredients = _context.DishIngredients.Where(x => x.DishId == dish.DishId);
                     _context.DishIngredients.RemoveRange(dishIngredients);
                     _context.Update(dish);
