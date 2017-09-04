@@ -57,8 +57,12 @@ namespace PizzaButiken.Controllers
             var model = new IndexViewModel
             {
                 Username = user.UserName,
+                CustomerName = user.CustomerName,
                 Email = user.Email,
                 PhoneNumber = user.PhoneNumber,
+                Street = user.Street,
+                PostalCode = user.PostalCode,
+                City = user.City,
                 IsEmailConfirmed = user.EmailConfirmed,
                 StatusMessage = StatusMessage
             };
@@ -81,6 +85,17 @@ namespace PizzaButiken.Controllers
                 throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
             }
 
+            var customerName = user.CustomerName;
+            if (model.CustomerName != customerName)
+            {
+                user.CustomerName = model.CustomerName;
+                var setCustomerNameResult = await _userManager.UpdateAsync(user);
+                if (!setCustomerNameResult.Succeeded)
+                {
+                    throw new ApplicationException($"Unexpected error occurred setting customer name for user with ID '{user.Id}'.");
+                }
+            }
+
             var email = user.Email;
             if (model.Email != email)
             {
@@ -100,6 +115,40 @@ namespace PizzaButiken.Controllers
                     throw new ApplicationException($"Unexpected error occurred setting phone number for user with ID '{user.Id}'.");
                 }
             }
+
+            var street = user.Street;
+            if (model.City != street)
+            {
+                user.Street = model.Street;
+                var setStreetResult = await _userManager.UpdateAsync(user);
+                if (!setStreetResult.Succeeded)
+                {
+                    throw new ApplicationException($"Unexpected error occurred setting street for user with ID '{user.Id}'.");
+                }
+            }
+
+            var postalCode = user.PostalCode;
+            if (model.PostalCode != postalCode)
+            {
+                user.PostalCode = model.PostalCode;
+                var setPostalCodeResult = await _userManager.UpdateAsync(user);
+                if (!setPostalCodeResult.Succeeded)
+                {
+                    throw new ApplicationException($"Unexpected error occurred setting postal code for user with ID '{user.Id}'.");
+                }
+            }
+
+            var city = user.City;
+            if (model.City != city)
+            {
+                user.City = model.City;
+                var setCityResult = await _userManager.UpdateAsync(user);
+                if (!setCityResult.Succeeded)
+                {
+                    throw new ApplicationException($"Unexpected error occurred setting city for user with ID '{user.Id}'.");
+                }
+            }
+            
 
             StatusMessage = "Your profile has been updated";
             return RedirectToAction(nameof(Index));
