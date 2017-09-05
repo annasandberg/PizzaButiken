@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using PizzaButiken.Data;
 using PizzaButiken.Models;
@@ -34,7 +35,7 @@ namespace PizzaButiken.Services
         public Cart GetCartForCurrentSession(ISession session)
         {
             var cartId = GetTempCartId(session);
-            var carts = _context.Carts.Include(i => i.Items).ThenInclude(ci => ci.CartItmeIngredients).ThenInclude(x => x.CartItem).ThenInclude(d => d.Dish);
+            var carts = _context.Carts.Include(i => i.Items).ThenInclude(ci => ci.CartItmeIngredients).ThenInclude(x => x.CartItem).ThenInclude(d => d.Dish).Include(u => u.ApplicationUser);
 
             var cart = carts.FirstOrDefault(x => x.CartId == cartId);
 

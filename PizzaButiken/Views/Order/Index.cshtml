@@ -1,0 +1,56 @@
+﻿@model PizzaButiken.Models.Cart
+
+@{
+    ViewData["Title"] = "Order";
+}
+
+<h2>Order Details</h2>
+
+<div class="col-md-9">
+    <table class="table">
+        <thead>
+            <tr>
+                <th class="col-md-2">Name</th>
+                <th class="col-md-4">Ingredients</th>
+                <th class="col-md-1">Price</th>
+                <th class="col-md-1">Quantity</th>
+                <th class="col-md-1">Total</th>
+            </tr>
+        </thead>
+        @foreach (var item in Model.Items)
+        {
+            <tr>
+                <td class="col-md-2">@item.Name</td>
+                <td class="col-md-4">
+                    @foreach (var ingredient in item.CartItmeIngredients)
+                    {
+                        @ingredient.Ingredient.Name
+                    }
+                </td>
+                <td class="col-md-1">@item.Price</td>
+                <td class="col-md-1">@item.Quantity</td>
+                <td class="col-md-1">
+                    @{
+                    var sum = item.Price * item.Quantity;
+                }
+                @sum
+            </td>
+        </tr>
+        }
+        <tr>
+            <td class="col-md-2"><b>Total:</b></td>
+            <td class="col-md-4"></td>
+            <td class="col-md-1"></td>
+            <td class="col-md-1"></td>
+            <td class="col-md-1"><b>@Model.Items.Sum(x => x.Price * x.Quantity) SEK</b></td>
+        </tr>
+    </table>
+</div>
+
+<div class="col-md-6">
+    @{ Html.RenderPartial("_ShippingAddress", Model.ApplicationUser);}
+</div>
+
+
+
+
