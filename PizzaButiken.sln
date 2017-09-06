@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.26730.8
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PizzaButiken", "PizzaButiken\PizzaButiken.csproj", "{98D6476A-C17F-4881-8090-4F8364875129}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PizzaButikenUnitTests", "PizzaButikenUnitTests\PizzaButikenUnitTests.csproj", "{BC3B7A9D-B966-4108-8AB5-3F223AFD3948}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,6 +20,12 @@ Global
 		{98D6476A-C17F-4881-8090-4F8364875129}.LocalIIS|Any CPU.Build.0 = LocalIIS|Any CPU
 		{98D6476A-C17F-4881-8090-4F8364875129}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{98D6476A-C17F-4881-8090-4F8364875129}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BC3B7A9D-B966-4108-8AB5-3F223AFD3948}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BC3B7A9D-B966-4108-8AB5-3F223AFD3948}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BC3B7A9D-B966-4108-8AB5-3F223AFD3948}.LocalIIS|Any CPU.ActiveCfg = Debug|Any CPU
+		{BC3B7A9D-B966-4108-8AB5-3F223AFD3948}.LocalIIS|Any CPU.Build.0 = Debug|Any CPU
+		{BC3B7A9D-B966-4108-8AB5-3F223AFD3948}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BC3B7A9D-B966-4108-8AB5-3F223AFD3948}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
