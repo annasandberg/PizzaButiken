@@ -51,6 +51,7 @@ namespace PizzaButiken
             services.AddTransient<IngredientService>();
             services.AddTransient<UserManager<ApplicationUser>>();
             services.AddTransient<RoleManager<IdentityRole>>();
+            services.AddTransient<OrderService>();
 
             services.AddMvc();
         }

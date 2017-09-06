@@ -1,18 +1,18 @@
-﻿
+﻿@model PizzaButiken.Models.Payment
 
 <div class="form-group">
     <label class="control-label">Card number</label>
-    <input class="form-control" />
-    @*<span asp-validation-for="PhoneNumber" class="text-danger"></span>*@
+    <input asp-for="CardNumber" class="form-control" />
+    <span asp-validation-for="CardNumber" class="text-danger"></span>
 </div>
 <div class="form-group">
     <label class="control-label">Valid to</label>
-    <input class="form-control" />
-    @*<span asp-validation-for="PhoneNumber" class="text-danger"></span>*@
+    <input asp-for="ValidTo" class="form-control" />
+    <span asp-validation-for="ValidTo" class="text-danger"></span>
 </div>
 <div class="form-group">
     <label class="control-label">CVV</label>
-    <input class="form-control" />
-    @*<span asp-validation-for="PhoneNumber" class="text-danger"></span>*@
+    <input asp-for="CVV" class="form-control" />
+    <span asp-validation-for="CVV" class="text-danger"></span>
 </div>
 

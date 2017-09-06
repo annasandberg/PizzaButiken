@@ -1,6 +1,6 @@
 ﻿@model PizzaButiken.Models.ApplicationUser
 
-<form asp-controller="Order" asp-action="Buy" method="post">
+
     <div class="form-group">
         <label asp-for="CustomerName" class="control-label"></label>
         <input asp-for="CustomerName" class="form-control" />
@@ -31,6 +31,4 @@
         <input asp-for="PhoneNumber" class="form-control" />
         <span asp-validation-for="PhoneNumber" class="text-danger"></span>
     </div>
-    @{Html.RenderPartial("_OrderPayment");}
-    <button type="submit">Buy</button>
-</form>
+    

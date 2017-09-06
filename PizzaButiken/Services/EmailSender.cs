@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -11,6 +12,7 @@ namespace PizzaButiken.Services
     {
         public Task SendEmailAsync(string email, string subject, string message)
         {
+            Debug.WriteLine(string.Format("To: {0} Subject: {1} Message: {2}", email, subject, message));
             return Task.CompletedTask;
         }
     }

@@ -1,7 +1,13 @@
 ﻿@model PizzaButiken.Models.Cart
 
+@inject PizzaButiken.Services.OrderService OrderService
+
 @{
     ViewData["Title"] = "Order";
+}
+
+@{ 
+    var payment = OrderService.Payment();
 }
 
 <h2>Order Details</h2>
@@ -38,19 +44,34 @@
         </tr>
         }
         <tr>
+            <td class="col-md-2"><b>Shipping fee:</b></td>
+            <td class="col-md-4"></td>
+            <td class="col-md-1"></td>
+            <td class="col-md-1"></td>
+            <td class="col-md-1">@{
+                var shippingFee = Model.Items.Sum(x => x.Price * x.Quantity) > 499 ? 0 : 49;
+            }<b>@shippingFee</b></td>
+        </tr>
+        <tr>
             <td class="col-md-2"><b>Total:</b></td>
             <td class="col-md-4"></td>
             <td class="col-md-1"></td>
             <td class="col-md-1"></td>
-            <td class="col-md-1"><b>@Model.Items.Sum(x => x.Price * x.Quantity) SEK</b></td>
+            <td class="col-md-1">@{ var total = Model.Items.Sum(x => x.Price * x.Quantity) + shippingFee;}
+            <b>@total SEK</b></td>
         </tr>
     </table>
 </div>
-
-<div class="col-md-6">
-    @{ Html.RenderPartial("_ShippingAddress", Model.ApplicationUser);}
-</div>
-
-
+<form asp-controller="Order" asp-action="Buy" method="post">
+    <input asp-for="CartId" type="hidden" />
+    <div class="col-md-6">
+        @{ Html.RenderPartial("_ShippingAddress", Model.ApplicationUser);}
+    </div>
+    <div class="col-md-6">
+        @{Html.RenderPartial("_OrderPayment", payment);}
+        <button type="submit">Buy</button>
+    </div>
+    
+</form>
 
 
