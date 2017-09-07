@@ -35,7 +35,12 @@ namespace PizzaButiken.Services
         public Cart GetCartForCurrentSession(ISession session)
         {
             var cartId = GetTempCartId(session);
-            var carts = _context.Carts.Include(i => i.Items).ThenInclude(ci => ci.CartItmeIngredients).ThenInclude(x => x.CartItem).ThenInclude(d => d.Dish).Include(u => u.ApplicationUser);
+            var carts = _context.Carts.Include(i => i.Items)
+                .ThenInclude(ci => ci.CartItmeIngredients)
+                .ThenInclude(i => i.Ingredient)
+                .Include(x => x.Items)
+                .ThenInclude(d => d.Dish)
+                .Include(u => u.ApplicationUser);
 
             var cart = carts.FirstOrDefault(x => x.CartId == cartId);
 

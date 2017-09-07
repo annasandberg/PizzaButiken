@@ -33,12 +33,10 @@ namespace PizzaButiken.Controllers
             _cartService = cartService;
         }
 
-        public IActionResult Index(int cartId)
+        public IActionResult Buy()
         {
-            var carts = _context.Carts.Include(ci => ci.Items).ThenInclude(x => x.CartItmeIngredients).ThenInclude(i => i.Ingredient).Include(u=> u.ApplicationUser);
-            var cart = carts.FirstOrDefault(id => id.CartId == cartId);
             var user = _userManager.GetUserAsync(_httpContextAccessor.HttpContext.User).Result;
-            var appUser = new ApplicationUser
+            var appUser = new ShippingAddress
             {
                 CustomerName = user?.CustomerName,
                 Email = user?.Email,
@@ -47,25 +45,30 @@ namespace PizzaButiken.Controllers
                 PostalCode = user?.PostalCode,
                 City = user?.City
             };
-            cart.ApplicationUser = appUser;
-            return View(cart);
+            return View(appUser);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Buy([Bind("CartId")]Cart cart, [Bind("CustomerName, Email, PhoneNumber, Street, PostalCode, City")]ApplicationUser user)
+        public IActionResult Buy([Bind("CustomerName, Email, PhoneNumber, Street, PostalCode, City, CardNumber, CVV")]ShippingAddress user)
         {
-            _orderService.CreateOrder(cart.CartId, user);
+            var cartId = _cartService.GetTempCartId(HttpContext.Session);
+            if (ModelState.IsValid)
+            {
+                _orderService.CreateOrder(cartId, user);
 
-            var order = _orderService.GetOrder(cart.CartId);
+                var order = _orderService.GetOrder(cartId);
 
-            string message = String.Format("Orderdatum: {0} Summa: {1} SEK Fraktavgift: {2} SEK", 
-                order.OrderDate.ToString(), order.TotalPrice.ToString(), order.ShippingFee.ToString());
-            _emailSender.SendEmailAsync(user.Email, "Tack för din beställning", message);
+                string message = String.Format("Orderdatum: {0} Summa: {1} SEK Fraktavgift: {2} SEK",
+                    order.OrderDate.ToString(), order.TotalPrice.ToString(), order.ShippingFee.ToString());
+                _emailSender.SendEmailAsync(user.Email, "Tack för din beställning", message);
 
-            HttpContext.Session.Clear();
+                HttpContext.Session.Clear();
 
-            return View("ThankYouPage");
+                return View("ThankYouPage");
+            }
+
+            return View(user);
         }
     }
 }

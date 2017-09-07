@@ -23,7 +23,7 @@ namespace PizzaButiken.Services
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public void CreateOrder(int cartId, ApplicationUser user)
+        public void CreateOrder(int cartId, ShippingAddress user)
         {
             var appUser = _userManager.GetUserAsync(_httpContextAccessor.HttpContext.User).Result;
             var carts = _context.Carts.Include(ci => ci.Items);
