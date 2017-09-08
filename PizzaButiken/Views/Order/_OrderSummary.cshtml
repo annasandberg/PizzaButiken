@@ -1,0 +1,36 @@
+﻿@inject PizzaButiken.Services.CartService CartService
+
+
+@{
+    var cart = CartService.GetCartForCurrentSession(Context.Session);
+    var itemsCount = CartService.GetNumberOfItemsInCart(cart.CartId);
+    var shippingFee = cart.Items.Sum(x => x.Price * x.Quantity) > 499 ? 0 : 49;
+}
+
+<h2>Order</h2>
+<table class="table">
+    @foreach (var di in cart.Items)
+    {
+        <tr>
+            <td class="col-md-2">@di.Name <b>(@di.Quantity)</b></td>
+            <td class="col-md-1"></td>
+            <td class="col-md-1">@di.Price</td>
+        </tr>
+    }
+    <tr>
+        <td><b>Sum:</b></td>
+        <td></td>
+        <td>@cart.Items.Sum(x => x.Price * x.Quantity) SEK</td>
+    </tr>
+    <tr>
+        <td>Shipping fee:</td>
+        <td></td>
+        <td>@shippingFee SEK</td>
+    </tr>
+    <tr>
+        @{ var total = cart.Items.Sum(x => x.Price * x.Quantity) + shippingFee;}
+        <td><b>Total: </b></td>
+        <td></td>
+        <td><b>@total SEK</b></td>
+    </tr>
+</table>

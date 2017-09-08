@@ -33,7 +33,12 @@ namespace PizzaButiken.Controllers
             _cartService = cartService;
         }
 
-        public IActionResult Buy()
+        public IActionResult OrderDetails()
+        {
+            return View();
+        }
+
+        public IActionResult Checkout(string returnUrl = null)
         {
             var user = _userManager.GetUserAsync(_httpContextAccessor.HttpContext.User).Result;
             var appUser = new ShippingAddress
@@ -45,12 +50,13 @@ namespace PizzaButiken.Controllers
                 PostalCode = user?.PostalCode,
                 City = user?.City
             };
+            ViewData["ReturnUrl"] = returnUrl;
             return View(appUser);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Buy([Bind("CustomerName, Email, PhoneNumber, Street, PostalCode, City, CardNumber, CVV")]ShippingAddress user)
+        public IActionResult Checkout([Bind("CustomerName, Email, PhoneNumber, Street, PostalCode, City, CardNumber, CVV")]ShippingAddress user)
         {
             var cartId = _cartService.GetTempCartId(HttpContext.Session);
             if (ModelState.IsValid)

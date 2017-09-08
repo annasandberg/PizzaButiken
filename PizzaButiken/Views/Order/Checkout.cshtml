@@ -1,0 +1,59 @@
+﻿@using PizzaButiken.Models
+
+@model PizzaButiken.Models.ShippingAddress
+
+@inject PizzaButiken.Services.OrderService OrderService
+@inject PizzaButiken.Services.CartService CartService
+@inject SignInManager<ApplicationUser> SignInManager
+
+@{
+    ViewData["Title"] = "Order";
+}
+
+@{ 
+    var payment = OrderService.Payment();
+    var cart = CartService.GetCartForCurrentSession(Context.Session);
+    var itemsCount = CartService.GetNumberOfItemsInCart(cart.CartId);
+}
+
+
+<form asp-controller="Order" asp-action="Checkout" method="post">
+    <input asp-for="@cart.CartId" type="hidden" />
+    @if (!SignInManager.IsSignedIn(User))
+    {
+        <div class="col-md-6">
+            <h2>Fill in shipping information</h2>
+            <h1>- OR -</h1>
+            <h3><a asp-controller="Account" asp-action="LogIn" asp-route-returnurl="/Order/Checkout">Login</a> to use your account settings</h3>
+            <p>Don't have an account? <a asp-controller="Account" asp-action="Register" asp-route-returnurl="/Order/Checkout">Register here</a> </p>
+        </div>
+    }
+    <div class="col-md-8">
+        @{ Html.RenderPartial("_ShippingAddress", Model);}
+    </div>
+    <div class="col-md-4">
+        @{ Html.RenderPartial("_OrderSummary");}
+    </div>
+    <div class="col-md-6">
+        <div class="form-group">
+            <label class="control-label">Card number</label>
+            <input asp-for="CardNumber" class="form-control" />
+            <span asp-validation-for="CardNumber" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label class="control-label">CVV</label>
+            <input asp-for="CVV" class="form-control" />
+            <span asp-validation-for="CVV" class="text-danger"></span>
+        </div>
+        @*<div class="form-group">
+                <label class="control-label">Valid to</label>
+                <input asp-for="ValidTo" class="form-control" />
+                <span asp-validation-for="ValidTo" class="text-danger"></span>
+            </div>
+        *@
+        @*@{Html.RenderPartial("_OrderPayment", Model.Payment);}*@
+        <button type="submit">Buy</button>
+    </div>
+
+</form>
+

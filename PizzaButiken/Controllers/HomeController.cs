@@ -25,6 +25,10 @@ namespace PizzaButiken.Controllers
 
         public async Task<IActionResult> Index(int dishCategoryId)
         {
+            if (dishCategoryId == 0)
+            {
+                return View(await _context.Dishes.Include(di => di.DishIngredients).ThenInclude(i => i.Ingredient).ToListAsync());
+            }
             return View(await _context.Dishes.Where(x => x.DishCategoryId == dishCategoryId).Include(di => di.DishIngredients).ThenInclude(i => i.Ingredient).ToListAsync());
         }
 
@@ -39,7 +43,6 @@ namespace PizzaButiken.Controllers
             {
                 case "add": _cartService.AddItemForCurrentSession(HttpContext.Session, id); break;
                 case "remove": _cartService.DeleteItemForCurrentSession(HttpContext.Session, id); break;
-               // case "customize": _cartService.CustomizeItemForCurrentsession(HttpContext.Session, id); break;
             }
 
             return RedirectToAction("Index");
@@ -75,20 +78,6 @@ namespace PizzaButiken.Controllers
                 _cartService.CustomizeItemForCurrentsession(HttpContext.Session, cartItem, form);
             }
             return RedirectToAction("Index");
-        }
-
-        public IActionResult About()
-        {
-            ViewData["Message"] = "Your application description page.";
-
-            return View();
-        }
-
-        public IActionResult Contact()
-        {
-            ViewData["Message"] = "Your contact page.";
-
-            return View();
         }
 
         public IActionResult Error()

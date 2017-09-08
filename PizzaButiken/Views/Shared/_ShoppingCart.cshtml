@@ -28,7 +28,7 @@
             }
         </table>
         <h5><b>Total: @cart.Items.Sum(x => x.Price * x.Quantity) SEK</b></h5>
-            <a asp-controller="Order" asp-action="Buy" class="btn btn-primary">Buy</a>
+            <a asp-controller="Order" asp-action="OrderDetails" class="btn btn-primary">Checkout</a>
     }
 
 
