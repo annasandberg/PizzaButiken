@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿@inject PizzaButiken.Services.CartService CartService
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
@@ -17,6 +18,11 @@
     </environment>
 </head>
 <body>
+
+    @{ 
+        var cart = CartService.GetCartForCurrentSession(Context.Session);
+        var itemsCount = CartService.GetNumberOfItemsInCart(cart.CartId);
+    }
     <nav class="navbar navbar-inverse navbar-fixed-top">
         <div class="container">
             <div class="navbar-header">
@@ -31,6 +37,8 @@
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
                     <li><a asp-area="" asp-controller="Home" asp-action="Index">Menu</a></li>
+                    <li><a asp-area="" asp-controller="Order" asp-action="Buy">
+                        <span class="glyphicon glyphicon-shopping-cart"></span>(@itemsCount)</a></li>
                     @*@if (User.IsInRole("Admin"))
                     {*@
                     <li><a asp-area="" asp-controller="Dishes" asp-action="Index">Dishes</a></li>

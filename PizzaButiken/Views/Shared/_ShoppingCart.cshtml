@@ -6,9 +6,10 @@
     var itemsCount = CartService.GetNumberOfItemsInCart(cart.CartId);
 }
 
-    <h5>Your shopping cart contains <b>@itemsCount</b> products</h5>
+    
     @if (cart.Items.Count() > 0)
     {
+        <h5>Your shopping cart contains <b>@itemsCount</b> products</h5>
         <table class="table">
             @foreach (var di in cart.Items)
             {
@@ -25,10 +26,11 @@
                     </td>
                 </tr>
             }
-        </table>       
+        </table>
+        <h5><b>Total: @cart.Items.Sum(x => x.Price * x.Quantity) SEK</b></h5>
+            <a asp-controller="Order" asp-action="Buy" class="btn btn-primary">Buy</a>
     }
-    <h5><b>Total: @cart.Items.Sum(x => x.Price * x.Quantity) SEK</b></h5>
-<a asp-controller="Order" asp-action="Buy" class="btn btn-primary">Buy</a>
+
 
 
 

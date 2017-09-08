@@ -151,6 +151,19 @@ namespace PizzaButiken.Services
 
         }
 
+        public string GetCartItemIngredients(int cartItemId)
+        {
+            var cartItem = _context.CartItems.Include(ci => ci.CartItmeIngredients).ThenInclude(i => i.Ingredient).FirstOrDefault(x => x.CartItemId == cartItemId);
+            var cartItemIngredients = cartItem.CartItmeIngredients;
+            var ingredients = new List<string>();
+            foreach (var item in cartItemIngredients)
+            {
+                ingredients.Add(item.Ingredient.Name);
+            }
+
+            return String.Join(", ", ingredients);
+        }
+
         public void DeleteItemForCurrentSession(ISession session, int cartItemId)
         {
             var cartItem = _context.CartItems.Find(cartItemId);

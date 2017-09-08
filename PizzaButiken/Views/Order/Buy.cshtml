@@ -10,59 +10,65 @@
 @{ 
     var payment = OrderService.Payment();
     var cart = CartService.GetCartForCurrentSession(Context.Session);
+    var itemsCount = CartService.GetNumberOfItemsInCart(cart.CartId);
 }
 
-<h2>Order Details</h2>
+@if (itemsCount == 0)
+{
+    <h2>Your shopping cart is empty</h2>
+}
+else
+{
+    <h2>Order Details</h2>
 
-<div class="col-md-9">
-    <table class="table">
-        <thead>
+    <div class="col-md-9">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th class="col-md-2">Name</th>
+                    <th class="col-md-4">Ingredients</th>
+                    <th class="col-md-1">Price</th>
+                    <th class="col-md-1">Quantity</th>
+                    <th class="col-md-1">Total</th>
+                </tr>
+            </thead>
+            @foreach (var item in cart.Items)
+            {
+                <tr>
+                    <td class="col-md-2">@item.Name</td>
+                    <td class="col-md-4">@CartService.GetCartItemIngredients(item.CartItemId)</td>
+                    <td class="col-md-1">@item.Price</td>
+                    <td class="col-md-1">@item.Quantity</td>
+                    <td class="col-md-1">
+                        @{
+                            var sum = item.Price * item.Quantity;
+                        }
+                        @sum SEK
+                    </td>
+                </tr>
+            }
             <tr>
-                <th class="col-md-2">Name</th>
-                <th class="col-md-4">Ingredients</th>
-                <th class="col-md-1">Price</th>
-                <th class="col-md-1">Quantity</th>
-                <th class="col-md-1">Total</th>
-            </tr>
-        </thead>
-        @foreach (var item in cart.Items)
-        {
-            <tr>
-                <td class="col-md-2">@item.Name</td>
-                <td class="col-md-4">
-                    @foreach (var ingredient in item.CartItmeIngredients)
-                    {
-                        @ingredient.Ingredient.Name
-                    }
-                </td>
-                <td class="col-md-1">@item.Price</td>
-                <td class="col-md-1">@item.Quantity</td>
+                <td class="col-md-2"><b>Shipping fee:</b></td>
+                <td class="col-md-4"></td>
+                <td class="col-md-1"></td>
+                <td class="col-md-1"></td>
                 <td class="col-md-1">
                     @{
-                    var sum = item.Price * item.Quantity;
-                }
-                @sum SEK
+                    var shippingFee = cart.Items.Sum(x => x.Price * x.Quantity) > 499 ? 0 : 49;
+                }<b>@shippingFee SEK</b>
             </td>
-        </tr>
-        }
-        <tr>
-            <td class="col-md-2"><b>Shipping fee:</b></td>
-            <td class="col-md-4"></td>
-            <td class="col-md-1"></td>
-            <td class="col-md-1"></td>
-            <td class="col-md-1">@{
-                var shippingFee = cart.Items.Sum(x => x.Price * x.Quantity) > 499 ? 0 : 49;
-            }<b>@shippingFee SEK</b></td>
         </tr>
         <tr>
             <td class="col-md-2"><b>Total:</b></td>
             <td class="col-md-4"></td>
             <td class="col-md-1"></td>
             <td class="col-md-1"></td>
-            <td class="col-md-1">@{ var total = cart.Items.Sum(x => x.Price * x.Quantity) + shippingFee;}
-            <b>@total SEK</b></td>
-        </tr>
-    </table>
+            <td class="col-md-1">
+                @{ var total = cart.Items.Sum(x => x.Price * x.Quantity) + shippingFee;}
+            <b>@total SEK</b>
+        </td>
+    </tr>
+</table>
 </div>
 <form asp-controller="Order" asp-action="Buy" method="post">
     <input asp-for="@cart.CartId" type="hidden" />
@@ -81,15 +87,14 @@
             <span asp-validation-for="CVV" class="text-danger"></span>
         </div>
         @*<div class="form-group">
-            <label class="control-label">Valid to</label>
-            <input asp-for="ValidTo" class="form-control" />
-            <span asp-validation-for="ValidTo" class="text-danger"></span>
-        </div>
+                <label class="control-label">Valid to</label>
+                <input asp-for="ValidTo" class="form-control" />
+                <span asp-validation-for="ValidTo" class="text-danger"></span>
+            </div>
         *@
         @*@{Html.RenderPartial("_OrderPayment", Model.Payment);}*@
         <button type="submit">Buy</button>
     </div>
-    
+
 </form>
-
-
+}
