@@ -1,0 +1,36 @@
+﻿@model List<PizzaButiken.Models.Order>
+@{
+    ViewData["Title"] = "Ship";
+}
+<h2>Ship</h2>
+@if (Model.Count == 0)
+{
+    <h3>Nothing to ship</h3>
+}
+else
+{
+    <table class="table">
+        <tr>
+            <th>Order number</th>
+            <th>Order date</th>
+            <th>Dishes</th>
+            <th></th>
+        </tr>
+        @foreach (var order in Model)
+        {
+            <tr>
+                <td>@order.OrderId</td>
+                <td>@order.OrderDate</td>
+                <td>
+                    @foreach (var dish in order.Cart.Items)
+                    {
+                        <p>@dish.Name (@dish.Quantity)</p>
+                    }
+                </td>
+                <td><a asp-controller="Order" asp-action="SetToShipped" asp-route-orderId="@order.OrderId" asp-route-cartId="@order.CartId">Shipped</a></td>
+            </tr>
+        }
+
+    </table>
+}
+

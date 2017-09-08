@@ -95,5 +95,38 @@ namespace PizzaButiken.Controllers
 
             return View("ThankYouPage");
         }
+
+        public IActionResult Bake()
+        {
+            var orders = _context.Orders.Include(x => x.Cart).ThenInclude(i => i.Items).Where(o => o.Paid == true && o.Baked == false).OrderBy(d => d.OrderDate).ToList();
+            return View(orders);
+        }
+
+        public IActionResult SetToBaked(int orderId, int cartId)
+        {
+            var order = _orderService.GetOrder(cartId);
+            order.Baked = true;
+            _context.Update(order);
+            _context.SaveChanges();
+
+            return RedirectToAction("Bake");
+        }
+
+        public IActionResult Ship()
+        {
+            var orders = _context.Orders.Include(x => x.Cart).ThenInclude(i => i.Items)
+                .Where(o => o.Paid == true && o.Baked == true && o.Shipped == false).OrderBy(d => d.OrderDate).ToList();
+            return View(orders);
+        }
+
+        public IActionResult SetToShipped(int orderId, int cartId)
+        {
+            var order = _orderService.GetOrder(cartId);
+            order.Shipped = true;
+            _context.Update(order);
+            _context.SaveChanges();
+
+            return RedirectToAction("Ship");
+        }
     }
 }
