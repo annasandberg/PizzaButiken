@@ -1,0 +1,59 @@
+﻿@model PizzaButiken.Models.ShippingAddress
+
+<h2>Pay with Credit card</h2>
+
+<div class="col-md-8">
+    <form asp-controller="Order" asp-action="OrderPayment" asp-route-userEmail="@Model.Email" method="post" id="paymentForm">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label class="control-label">Card number</label>
+                <input type="text" id="cardNumber" name="cardNumber" class="form-control" />
+            </div>
+            <div class="form-group">
+                <div>
+                    <label class="control-label">CVV</label>
+                </div>
+                <div>
+                    <input type="text" id="cvv" name="cvv" class="form-control" />
+                </div>
+            </div>
+            <div class="form-group">
+                <div>
+                    <label class="control-label">Valid to</label>
+                </div>
+                <input type="month" min="@DateTime.Today" class="form-control" />
+            </div>
+            <input type="submit" class="btn btn-primary" value="Buy" />
+        </div>
+    </form>
+</div>
+
+
+<div class="col-md-4">
+    @{ Html.RenderPartial("_ShippingSummary", Model);}
+</div>
+<div class="col-md-4">
+    @{ Html.RenderPartial("_OrderSummary");}
+</div>
+
+
+<script type="text/javascript">
+    $("#paymentForm").validate({
+        rules: {
+            cardNumber: {
+                required: true,
+                minlength: 16,
+                maxlength: 16,
+                digits: true
+            },
+            cvv: {
+                required: true,
+                minlength: 3,
+                maxlength: 3,
+                digits: true
+            }
+        }
+    });
+</script>
+
+

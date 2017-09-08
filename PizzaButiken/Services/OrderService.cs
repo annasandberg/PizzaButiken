@@ -60,10 +60,5 @@ namespace PizzaButiken.Services
         {
             return _context.Orders.FirstOrDefault(x => x.CartId == cartId);
         }
-
-        public Payment Payment()
-        {
-            return new Payment();
-        }
     }
 }

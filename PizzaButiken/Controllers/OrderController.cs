@@ -56,25 +56,44 @@ namespace PizzaButiken.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Checkout([Bind("CustomerName, Email, PhoneNumber, Street, PostalCode, City, CardNumber, CVV")]ShippingAddress user)
+        public IActionResult Checkout([Bind("CustomerName, Email, PhoneNumber, Street, PostalCode, City")]ShippingAddress user)
         {
             var cartId = _cartService.GetTempCartId(HttpContext.Session);
             if (ModelState.IsValid)
             {
                 _orderService.CreateOrder(cartId, user);
 
-                var order = _orderService.GetOrder(cartId);
-
-                string message = String.Format("Orderdatum: {0} Summa: {1} SEK Fraktavgift: {2} SEK",
-                    order.OrderDate.ToString(), order.TotalPrice.ToString(), order.ShippingFee.ToString());
-                _emailSender.SendEmailAsync(user.Email, "Tack för din beställning", message);
-
-                HttpContext.Session.Clear();
-
-                return View("ThankYouPage");
+                return View("OrderPayment", user);
             }
 
             return View(user);
+        }
+
+        public IActionResult OrderPayment(ShippingAddress user)
+        {
+            var cartId = _cartService.GetTempCartId(HttpContext.Session);
+            var order = _orderService.GetOrder(cartId);
+
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult OrderPayment(string userEmail)
+        {
+            var cartId = _cartService.GetTempCartId(HttpContext.Session);
+            var order = _orderService.GetOrder(cartId);
+            order.Paid = true;
+            _context.Update(order);
+            _context.SaveChanges();
+
+            string message = String.Format("Orderdatum: {0} Summa: {1} SEK Fraktavgift: {2} SEK",
+            order.OrderDate.ToString(), order.TotalPrice.ToString(), order.ShippingFee.ToString());
+            _emailSender.SendEmailAsync(userEmail, "Tack för din beställning", message);
+
+            HttpContext.Session.Clear();
+
+            return View("ThankYouPage");
         }
     }
 }
