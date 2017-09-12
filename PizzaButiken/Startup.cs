@@ -83,9 +83,9 @@ namespace PizzaButiken
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
 
-            context.Database.Migrate();
+            DBInitializer.Initialize(context, userManager, roleManager);
 
-            //DBInitializer.Initialize(context, userManager, roleManager);
+            context.Database.Migrate();
         }
     }
 }
