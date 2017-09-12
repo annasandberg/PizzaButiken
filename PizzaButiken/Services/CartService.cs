@@ -87,6 +87,29 @@ namespace PizzaButiken.Services
             _context.SaveChanges();
         }
 
+        public void CustomizeAndAddItemForCurrentSession(ISession session, int dishId, IFormCollection form)
+        {
+            //skapa nytt cartItem - lägg till i cart
+            var cart = GetCartForCurrentSession(session);
+            var dish = GetDish(dishId);
+
+            AddNewCartItemToCart(cart, dish, form);
+
+            var carts = _context.Carts.Include(x => x.Items).ThenInclude(d => d.Dish);
+
+            if (carts.Any(x => x.CartId == cart.CartId))
+            {
+                _context.Update(cart);
+            }
+            else
+            {
+                _context.Add(cart);
+            }
+
+            _context.SaveChanges();
+
+        }
+
         public void CustomizeItemForCurrentsession(ISession session, CartItem cartItem, IFormCollection form)
         {
             var cartItemToCustomize = GetCartItem(cartItem);

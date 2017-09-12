@@ -31,13 +31,13 @@ namespace PizzaButiken.Data
 
             if (context.Dishes.ToList().Count == 0)
             {
-                var cheese = new Ingredient { Name = "Cheese" };
-                var tomatoe = new Ingredient { Name = "Tomatoe" };
-                var ham = new Ingredient { Name = "Ham" };
-                var mushroom = new Ingredient { Name = "Mushrooms" };
-                var pineapple = new Ingredient { Name = "Pineapple" };
-                var spaghetti = new Ingredient { Name = "Spagetti" };
-                var lettuce = new Ingredient { Name = "Lettuce" };
+                var cheese = new Ingredient { Name = "Cheese", Price = 5 };
+                var tomatoe = new Ingredient { Name = "Tomatoe", Price = 5 };
+                var ham = new Ingredient { Name = "Ham", Price = 5 };
+                var mushroom = new Ingredient { Name = "Mushrooms", Price = 5 };
+                var pineapple = new Ingredient { Name = "Pineapple", Price = 5 };
+                var spaghetti = new Ingredient { Name = "Spagetti", Price = 5 };
+                var lettuce = new Ingredient { Name = "Lettuce", Price = 5 };
 
                 context.Ingredients.Add(cheese);
                 context.Ingredients.Add(tomatoe);

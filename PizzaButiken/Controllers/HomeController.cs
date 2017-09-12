@@ -48,6 +48,27 @@ namespace PizzaButiken.Controllers
             return RedirectToAction("Index");
         }
 
+        public IActionResult AddAndCustomizeCartItem(int dishId)
+        {
+            var dish = _context.Dishes.Include(di => di.DishIngredients).ThenInclude(i => i.Ingredient).FirstOrDefault(d => d.DishId == dishId);
+            foreach (var ingredient in dish.DishIngredients)
+            {
+                ingredient.Enabled = true;
+            }
+            return View(dish);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult AddAndCustomizeCartItem([Bind("DishId")]Dish dish, IFormCollection form)
+        {
+            if (ModelState.IsValid)
+            {
+                _cartService.CustomizeAndAddItemForCurrentSession(HttpContext.Session, dish.DishId, form);
+            }
+            return RedirectToAction("Index");
+        }
+
         public async Task<IActionResult> CustomizeCartItem(int id)
         {
             if (id == 0)

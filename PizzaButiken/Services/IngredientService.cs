@@ -55,6 +55,22 @@ namespace PizzaButiken.Services
             return ingredients;
         }
 
+        public List<Ingredient> GetAllIngredientsForCustomizingDish(int dishId)
+        {
+            var dish = GetDish(dishId).Result;
+            var ingredients = _context.Ingredients.OrderBy(i => i.Name).ToList();
+
+            foreach (var ingredient in ingredients)
+            {
+                if (dish.DishIngredients.Any(x => x.IngredientId == ingredient.IngredientId))
+                {
+                    ingredient.Enabled = true;
+                }
+            }
+
+            return ingredients;
+        }
+
         private async Task<Dish> GetDish(int dishId)
         {
             var dish = await _context.Dishes

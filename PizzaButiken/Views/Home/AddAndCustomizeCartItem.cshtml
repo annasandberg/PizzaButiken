@@ -1,0 +1,44 @@
+﻿@model PizzaButiken.Models.Dish
+@inject PizzaButiken.Services.IngredientService IngredientService
+
+@{
+    ViewData["Title"] = "Customize";
+}
+<h2>Customize</h2>
+@{
+    var ingredients = IngredientService.GetAllIngredients();
+    var dishIngredients = IngredientService.GetAllIngredientsForCustomizingDish(Model.DishId);
+    var currency = " SEK";
+}
+<h4>@Model.Name</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-controller="Home" asp-action="AddAndCustomizeCartItem">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="DishId" />
+            <div class="form-group">
+                <label asp-for="DishIngredients" class="control-label"></label>
+                @{
+                    for (int i = 0; i < ingredients.Count(); i++)
+                    {
+                        <div>
+                            <input asp-for="@ingredients[i].Enabled" type="checkbox" name="ingredient-@ingredients[i].IngredientId" />
+                            <label asp-for="@ingredients[i].IngredientId">
+                                @ingredients[i].Name
+                                @if (!Model.DishIngredients.Any(di => di.IngredientId == ingredients[i].IngredientId))
+                                {
+                                    @ingredients[i].Price @currency
+                                }
+                            </label>
+                        </div>
+                    }
+                }
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Add to cart" class="btn btn-default" />
+            </div>
+        </form>
+    </div>
+</div>
+

@@ -30,7 +30,8 @@
                                 @Html.DisplayFor(modelItem => item.Price) SEK
                             </td>
                             <td class="col-md-1">
-                                <button type="submit" name="customize-@item.DishId" title="Customize"><span class="glyphicon glyphicon-adjust"></span></button>
+                                <a asp-controller="Home" asp-action="AddAndCustomizeCartItem" asp-route-dishId="@item.DishId" title="Customize">
+                                <span class="glyphicon glyphicon-adjust"></span></a>
                             </td>
                             <td class="col-md-1">
                                 <button type="submit" name="add-@item.DishId" title="Add to cart">
