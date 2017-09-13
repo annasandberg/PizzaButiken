@@ -33,9 +33,16 @@ namespace PizzaButiken.Controllers
             _cartService = cartService;
         }
 
-        public IActionResult OrderDetails()
+        public IActionResult OrderDetails(string returnUrl = null)
         {
+            ViewData["ReturnUrl"] = returnUrl;
             return View();
+        }
+
+        public IActionResult RemoveCartItem(int cartItemId)
+        {
+            _cartService.DeleteItemForCurrentSession(HttpContext.Session, cartItemId);
+            return RedirectToAction("OrderDetails");
         }
 
         public IActionResult Checkout(string returnUrl = null)

@@ -17,7 +17,7 @@ else
 {
     <h2>Order Details</h2>
 
-    <div class="col-md-9">
+    <div class="col-md-11">
         <table class="table">
             <thead>
                 <tr>
@@ -26,6 +26,7 @@ else
                     <th class="col-md-1">Price</th>
                     <th class="col-md-1">Quantity</th>
                     <th class="col-md-1">Total</th>
+                    <th></th>
                 </tr>
             </thead>
             @foreach (var item in cart.Items)
@@ -34,12 +35,22 @@ else
                     <td class="col-md-2">@item.Name</td>
                     <td class="col-md-4">@CartService.GetCartItemIngredients(item.CartItemId)</td>
                     <td class="col-md-1">@item.Price</td>
-                    <td class="col-md-1">@item.Quantity</td>
+                    <td class="col-md-1">@item.Quantity  
+                        <a asp-controller="Home" asp-action="IncreaseCartItemQuantity" asp-route-cartItemId="@item.CartItemId" asp-route-returnurl="/Order/OrderDetails">
+                        <span class="glyphicon glyphicon-plus-sign" style="margin-left:10px;"></span></a>
+                        <a asp-controller="Home" asp-action="DecreaseCartItemQuantity" asp-route-cartItemId="@item.CartItemId" asp-route-returnurl="/Order/OrderDetails">
+                        <span class="glyphicon glyphicon-minus-sign"></span></a>
+                    </td>
                     <td class="col-md-1">
                         @{
                             var sum = item.Price * item.Quantity;
                         }
                         @sum SEK
+                    </td>
+                    <td class="col-md-1"><a asp-controller="Home" asp-action="CustomizeCartItem" asp-route-id="@item.CartItemId" title="Customize" asp-route-returnurl="/Order/OrderDetails">
+                    <span class="glyphicon glyphicon-adjust"></span></a>
+                    <a asp-action="RemoveCartItem" asp-route-cartItemId="@item.CartItemId">
+                    <span class="glyphicon glyphicon-remove" title="Remove" style="margin-left:10px;"></span></a>
                     </td>
                 </tr>
                             }

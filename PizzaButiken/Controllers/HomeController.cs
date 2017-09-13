@@ -69,7 +69,7 @@ namespace PizzaButiken.Controllers
             return RedirectToAction("Index");
         }
 
-        public async Task<IActionResult> CustomizeCartItem(int id)
+        public async Task<IActionResult> CustomizeCartItem(int id, string returnUrl = null)
         {
             if (id == 0)
             {
@@ -86,36 +86,52 @@ namespace PizzaButiken.Controllers
             {
                 return NotFound();
             }
+            ViewData["ReturnUrl"] = returnUrl;
             return View(cartItem);
 
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult CustomizeCartItem([Bind("CartItemId")]CartItem cartItem, IFormCollection form)
+        public IActionResult CustomizeCartItem([Bind("CartItemId")]CartItem cartItem, IFormCollection form, string returnUrl = null)
         {
             if (ModelState.IsValid)
             {
                 _cartService.CustomizeItemForCurrentsession(HttpContext.Session, cartItem, form);
             }
-            return RedirectToAction("Index");
+            ViewData["ReturnUrl"] = returnUrl;
+            return RedirectToLocal(returnUrl);
         }
 
-        public IActionResult IncreaseCartItemQuantity(int cartItemId)
+        public IActionResult IncreaseCartItemQuantity(int cartItemId, string returnUrl = null)
         {
             _cartService.IncreaseCartItemQuantity(cartItemId);
-            return RedirectToAction("Index");
+            ViewData["ReturnUrl"] = returnUrl;
+            return RedirectToLocal(returnUrl);
         }
 
-        public IActionResult DecreaseCartItemQuantity(int cartItemId)
+        public IActionResult DecreaseCartItemQuantity(int cartItemId, string returnUrl = null)
         {
             _cartService.DecreaseCartItemQuantity(cartItemId);
-            return RedirectToAction("Index");
+            ViewData["ReturnUrl"] = returnUrl;
+            return RedirectToLocal(returnUrl);
         }
 
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+
+        private IActionResult RedirectToLocal(string returnUrl)
+        {
+            if (Url.IsLocalUrl(returnUrl))
+            {
+                return Redirect(returnUrl);
+            }
+            else
+            {
+                return RedirectToAction(nameof(Index));
+            }
         }
     }
 }
