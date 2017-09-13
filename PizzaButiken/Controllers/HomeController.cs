@@ -101,6 +101,18 @@ namespace PizzaButiken.Controllers
             return RedirectToAction("Index");
         }
 
+        public IActionResult IncreaseCartItemQuantity(int cartItemId)
+        {
+            _cartService.IncreaseCartItemQuantity(cartItemId);
+            return RedirectToAction("Index");
+        }
+
+        public IActionResult DecreaseCartItemQuantity(int cartItemId)
+        {
+            _cartService.DecreaseCartItemQuantity(cartItemId);
+            return RedirectToAction("Index");
+        }
+
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });

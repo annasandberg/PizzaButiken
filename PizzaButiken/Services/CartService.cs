@@ -73,7 +73,7 @@ namespace PizzaButiken.Services
                 _context.Update(cartItem);
             }
 
-            var carts = _context.Carts.Include(x => x.Items).ThenInclude(d => d.Dish);
+            var carts = _context.Carts.Include(x => x.Items).ThenInclude(c => c.CartItmeIngredients).ThenInclude(i => i.CartItem).ThenInclude(d => d.Dish);
 
             if (carts.Any(x => x.CartId == cart.CartId))
             {
@@ -89,7 +89,6 @@ namespace PizzaButiken.Services
 
         public void CustomizeAndAddItemForCurrentSession(ISession session, int dishId, IFormCollection form)
         {
-            //skapa nytt cartItem - lägg till i cart
             var cart = GetCartForCurrentSession(session);
             var dish = GetDish(dishId);
 
@@ -174,6 +173,22 @@ namespace PizzaButiken.Services
 
         }
 
+        public void IncreaseCartItemQuantity(int cartItemId)
+        {
+            var cartItem = _context.CartItems.Find(cartItemId);
+            cartItem.Quantity++;
+            _context.Update(cartItem);
+            _context.SaveChanges();
+        }
+
+        public void DecreaseCartItemQuantity(int cartItemId)
+        {
+            var cartItem = _context.CartItems.Find(cartItemId);
+            cartItem.Quantity--;
+            _context.Update(cartItem);
+            _context.SaveChanges();
+        }
+
         public string GetCartItemIngredients(int cartItemId)
         {
             var cartItem = _context.CartItems.Include(ci => ci.CartItmeIngredients).ThenInclude(i => i.Ingredient).FirstOrDefault(x => x.CartItemId == cartItemId);
@@ -233,14 +248,16 @@ namespace PizzaButiken.Services
                         Enabled = true
                     });
                 }
+                return cartItemIngredients;
             }
             else
             {
                 AddCheckedCartItemIngredients(form, cartItem);
                 SetCartItemName(cartItem);
+                return cartItem.CartItmeIngredients;
             }
             
-            return cartItemIngredients;
+            
         }
 
         private bool ItemExistsInCart(CartItem cartItem)
