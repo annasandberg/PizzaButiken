@@ -78,8 +78,8 @@ namespace PizzaButiken.Controllers
             var cartItem = await _context.CartItems
                 .Include(c => c.CartItmeIngredients)
                 .ThenInclude(i => i.Ingredient)
+                .Include(d => d.Dish)
                 .ThenInclude(x => x.DishIngredients)
-                .ThenInclude(d => d.Dish)
                 .SingleOrDefaultAsync(x => x.CartItemId == id);
 
             if (cartItem == null)

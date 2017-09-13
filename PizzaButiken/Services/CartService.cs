@@ -279,8 +279,9 @@ namespace PizzaButiken.Services
             var cartItems = _context.CartItems
                     .Include(x => x.CartItmeIngredients)
                     .ThenInclude(i => i.Ingredient)
-                    .ThenInclude(di => di.DishIngredients)
-                    .ThenInclude(d => d.Dish);
+                    .Include(d => d.Dish)
+                    .ThenInclude(di => di.DishIngredients);
+                    
             return cartItems.FirstOrDefault(c => c.CartItemId == cartItem.CartItemId);
         }
 
@@ -294,16 +295,19 @@ namespace PizzaButiken.Services
         private List<int> GetCheckedIngredients(IFormCollection form)
         {
             var key = form.Keys.FirstOrDefault(k => k.Contains("ingredient-"));
-            var dashPos = key.IndexOf("-");
-            var checkedIngredients = form.Keys.Where(k => k.Contains("ingredient-"));
-
             var checkedIds = new List<int>();
 
-            foreach (var ingredient in checkedIngredients)
+            if (key != null)
             {
-                var checkboxId = int.Parse(ingredient.Substring(dashPos + 1));
-                checkedIds.Add(checkboxId);
+                var dashPos = key.IndexOf("-");
+                var checkedIngredients = form.Keys.Where(k => k.Contains("ingredient-"));
+                foreach (var ingredient in checkedIngredients)
+                {
+                    var checkboxId = int.Parse(ingredient.Substring(dashPos + 1));
+                    checkedIds.Add(checkboxId);
+                }
             }
+            
             return checkedIds;
         }
 

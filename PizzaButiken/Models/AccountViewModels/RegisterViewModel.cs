@@ -37,6 +37,11 @@ namespace PizzaButiken.Models.AccountViewModels
 
         [StringLength(100, ErrorMessage = "The {0} cannot be longer than {1} characters.")]
         public string City { get; set; }
+
+        [Required]
+        [Phone]
+        [Display(Name = "Phone number")]
+        public string PhoneNumber { get; set; }
     }
 }
 
