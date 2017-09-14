@@ -114,5 +114,13 @@ namespace PizzaButiken.Services
             _context.Update(orderToShip);
             _context.SaveChanges();
         }
+
+        public List<Order> GetOrderHistoryForUser(ApplicationUser user)
+        {
+            return _context.Orders
+                .Include(c => c.Cart)
+                .ThenInclude(ci => ci.Items)
+                .Where(u => u.ApplicationUserId == user.Id && u.Paid == true).ToList();
+        }
     }
 }

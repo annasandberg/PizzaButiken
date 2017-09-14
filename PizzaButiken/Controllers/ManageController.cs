@@ -25,6 +25,7 @@ namespace PizzaButiken.Controllers
         private readonly IEmailSender _emailSender;
         private readonly ILogger _logger;
         private readonly UrlEncoder _urlEncoder;
+        private readonly OrderService _orderService;
 
         private const string AuthenicatorUriFormat = "otpauth://totp/{0}:{1}?secret={2}&issuer={0}&digits=6";
 
@@ -33,13 +34,15 @@ namespace PizzaButiken.Controllers
           SignInManager<ApplicationUser> signInManager,
           IEmailSender emailSender,
           ILogger<ManageController> logger,
-          UrlEncoder urlEncoder)
+          UrlEncoder urlEncoder,
+          OrderService orderService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _emailSender = emailSender;
             _logger = logger;
             _urlEncoder = urlEncoder;
+            _orderService = orderService;
         }
 
         [TempData]
@@ -511,6 +514,19 @@ namespace PizzaButiken.Controllers
             _logger.LogInformation("User with ID {UserId} has generated new 2FA recovery codes.", user.Id);
 
             return View(model);
+        }
+
+        public IActionResult OrderHistory()
+        {
+            var user = _userManager.GetUserAsync(User).Result;
+            if (user == null)
+            {
+                throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+            }
+
+            var orders = _orderService.GetOrderHistoryForUser(user);
+
+            return View(orders);
         }
 
         #region Helpers
