@@ -7,22 +7,23 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PizzaButiken.Data;
 using PizzaButiken.Models;
+using PizzaButiken.Services;
 
 namespace PizzaButiken.Controllers
 {
     public class IngredientsController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IngredientService _ingredientService;
 
-        public IngredientsController(ApplicationDbContext context)
+        public IngredientsController(IngredientService ingredientService)
         {
-            _context = context;
+            _ingredientService = ingredientService;
         }
 
         // GET: Ingredients
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            return View(await _context.Ingredients.OrderBy(i => i.Name).ToListAsync());
+            return View(_ingredientService.GetAllIngredients());
         }
 
         // GET: Ingredients/Create
@@ -36,26 +37,25 @@ namespace PizzaButiken.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("IngredientId,Name,Price")] Ingredient ingredient)
+        public IActionResult Create([Bind("IngredientId,Name,Price")] Ingredient ingredient)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(ingredient);
-                await _context.SaveChangesAsync();
+                _ingredientService.Create(ingredient);
                 return RedirectToAction(nameof(Index));
             }
             return View(ingredient);
         }
 
         // GET: Ingredients/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public IActionResult Edit(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var ingredient = await _context.Ingredients.SingleOrDefaultAsync(m => m.IngredientId == id);
+            var ingredient = _ingredientService.GetIngredient(id);
             if (ingredient == null)
             {
                 return NotFound();
@@ -68,7 +68,7 @@ namespace PizzaButiken.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IngredientId,Name,Price")] Ingredient ingredient)
+        public IActionResult Edit(int id, [Bind("IngredientId,Name,Price")] Ingredient ingredient)
         {
             if (id != ingredient.IngredientId)
             {
@@ -79,8 +79,7 @@ namespace PizzaButiken.Controllers
             {
                 try
                 {
-                    _context.Update(ingredient);
-                    await _context.SaveChangesAsync();
+                    _ingredientService.Edit(ingredient);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -99,15 +98,14 @@ namespace PizzaButiken.Controllers
         }
 
         // GET: Ingredients/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public IActionResult Delete(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var ingredient = await _context.Ingredients
-                .SingleOrDefaultAsync(m => m.IngredientId == id);
+            var ingredient = _ingredientService.GetIngredient(id);
             if (ingredient == null)
             {
                 return NotFound();
@@ -119,17 +117,19 @@ namespace PizzaButiken.Controllers
         // POST: Ingredients/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public IActionResult DeleteConfirmed(int id)
         {
-            var ingredient = await _context.Ingredients.SingleOrDefaultAsync(m => m.IngredientId == id);
-            _context.Ingredients.Remove(ingredient);
-            await _context.SaveChangesAsync();
+            _ingredientService.Delete(id);
             return RedirectToAction(nameof(Index));
         }
 
         private bool IngredientExists(int id)
         {
-            return _context.Ingredients.Any(e => e.IngredientId == id);
+            if (_ingredientService.GetIngredient(id) != null)
+            {
+                return true;
+            }
+            return false;
         }
     }
 }

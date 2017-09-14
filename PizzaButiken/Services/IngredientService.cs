@@ -22,6 +22,30 @@ namespace PizzaButiken.Services
             return _context.Ingredients.OrderBy(i => i.Name).ToList();
         }
 
+        public Ingredient GetIngredient(int? id)
+        {
+            return _context.Ingredients.Find(id);
+        }
+
+        public void Create(Ingredient ingredient)
+        {
+            _context.Add(ingredient);
+            _context.SaveChanges();
+        }
+
+        public void Edit(Ingredient ingredient)
+        {
+            _context.Update(ingredient);
+            _context.SaveChanges();
+        }
+
+        public void Delete(int id)
+        {
+            var ingredient = GetIngredient(id);
+            _context.Ingredients.Remove(ingredient);
+            _context.SaveChanges();
+        }
+
         public List<Ingredient> GetAllIngredientsForEditingDish(int dishId)
         {
             var dish = GetDish(dishId).Result;
