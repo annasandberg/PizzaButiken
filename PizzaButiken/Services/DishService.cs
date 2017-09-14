@@ -23,6 +23,25 @@ namespace PizzaButiken.Services
             return _context.Dishes.OrderBy(d => d.Name).ToList();
         }
 
+        public List<Dish> GetAllDishesAndTheirIngredients()
+        {
+            return _context.Dishes
+                .Include(di => di.DishIngredients)
+                .ThenInclude(i => i.Ingredient)
+                .OrderBy(d => d.Name)
+                .ToList();
+        }
+
+        public List<Dish> GetAllDishesInCategory(int dishCategoryId)
+        {
+            return _context.Dishes
+                .Where(x => x.DishCategoryId == dishCategoryId)
+                .Include(di => di.DishIngredients)
+                .ThenInclude(i => i.Ingredient)
+                .OrderBy(d => d.Name)
+                .ToList();
+        }
+
         public Dish GetDish(int? id)
         {
             return _context.Dishes

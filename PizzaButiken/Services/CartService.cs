@@ -47,6 +47,16 @@ namespace PizzaButiken.Services
             return cart;
         }
 
+        public CartItem GetCartItem(int id)
+        {
+            return _context.CartItems
+                .Include(c => c.CartItmeIngredients)
+                .ThenInclude(i => i.Ingredient)
+                .Include(d => d.Dish)
+                .ThenInclude(x => x.DishIngredients)
+                .SingleOrDefault(x => x.CartItemId == id);
+        }
+
         public int GetNumberOfItemsInCart(int cartId)
         {
             var cart = _context.Carts.Find(cartId);

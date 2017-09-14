@@ -14,22 +14,22 @@ namespace PizzaButiken.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ApplicationDbContext _context;
         private readonly CartService _cartService;
+        private readonly DishService _dishService;
 
-        public HomeController(ApplicationDbContext context, CartService cartService)
+        public HomeController(CartService cartService, DishService dishService)
         {
-            _context = context;
             _cartService = cartService;
+            _dishService = dishService;
         }
 
-        public async Task<IActionResult> Index(int dishCategoryId)
+        public IActionResult Index(int dishCategoryId)
         {
             if (dishCategoryId == 0)
             {
-                return View(await _context.Dishes.Include(di => di.DishIngredients).ThenInclude(i => i.Ingredient).ToListAsync());
+                return View(_dishService.GetAllDishesAndTheirIngredients());
             }
-            return View(await _context.Dishes.Where(x => x.DishCategoryId == dishCategoryId).Include(di => di.DishIngredients).ThenInclude(i => i.Ingredient).ToListAsync());
+            return View(_dishService.GetAllDishesInCategory(dishCategoryId));
         }
 
         [HttpPost]
@@ -52,7 +52,7 @@ namespace PizzaButiken.Controllers
 
         public IActionResult AddAndCustomizeCartItem(int dishId)
         {
-            var dish = _context.Dishes.Include(di => di.DishIngredients).ThenInclude(i => i.Ingredient).FirstOrDefault(d => d.DishId == dishId);
+            var dish = _dishService.GetDish(dishId);
             foreach (var ingredient in dish.DishIngredients)
             {
                 ingredient.Enabled = true;
@@ -71,18 +71,13 @@ namespace PizzaButiken.Controllers
             return RedirectToAction("Index");
         }
 
-        public async Task<IActionResult> CustomizeCartItem(int id, string returnUrl = null)
+        public IActionResult CustomizeCartItem(int id, string returnUrl = null)
         {
             if (id == 0)
             {
                 return NotFound();
             }
-            var cartItem = await _context.CartItems
-                .Include(c => c.CartItmeIngredients)
-                .ThenInclude(i => i.Ingredient)
-                .Include(d => d.Dish)
-                .ThenInclude(x => x.DishIngredients)
-                .SingleOrDefaultAsync(x => x.CartItemId == id);
+            var cartItem = _cartService.GetCartItem(id); 
 
             if (cartItem == null)
             {
