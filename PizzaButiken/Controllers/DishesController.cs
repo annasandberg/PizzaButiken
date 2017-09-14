@@ -9,36 +9,34 @@ using PizzaButiken.Data;
 using PizzaButiken.Models;
 using Microsoft.AspNetCore.Http;
 using System.IO;
+using PizzaButiken.Services;
 
 namespace PizzaButiken.Controllers
 {
     public class DishesController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly DishService _dishService;
 
-        public DishesController(ApplicationDbContext context)
+        public DishesController(DishService dishService)
         {
-            _context = context;
+            _dishService = dishService;
         }
 
         // GET: Dishes
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            return View(await _context.Dishes.ToListAsync());
+            return View(_dishService.GetAllDishes());
         }
 
         // GET: Dishes/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public IActionResult Details(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var dish = await _context.Dishes
-                .Include(d => d.DishIngredients)
-                .ThenInclude(di => di.Ingredient)
-                .SingleOrDefaultAsync(m => m.DishId == id);
+            var dish = _dishService.GetDish(id);
             if (dish == null)
             {
                 return NotFound();
@@ -58,43 +56,25 @@ namespace PizzaButiken.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("DishId,Name,Price,DishCategoryId,Image,ImageUrl")] Dish dish, IFormCollection form)
+        public IActionResult Create([Bind("DishId,Name,Price,DishCategoryId,Image,ImageUrl")] Dish dish, IFormCollection form)
         {
             if (ModelState.IsValid)
             {
-                var filename = form.Files[0].FileName;
-                dish.ImageUrl = filename;
-                _context.Add(dish);
-                await _context.SaveChangesAsync();
-
-                var key = form.Keys.FirstOrDefault(k => k.Contains("ingredient-"));
-                var dashPos = key.IndexOf("-");
-                var checkedIngredients = form.Keys.Where(k => k.Contains("ingredient-"));
-
-                dish.DishIngredients = new List<DishIngredient>();
-
-                foreach (var ingredient in checkedIngredients)
-                {
-                    var id = int.Parse(ingredient.Substring(dashPos + 1));
-                    dish.DishIngredients.Add(new DishIngredient { IngredientId = id, Enabled = true, DishId = dish.DishId });
-                }
-
-                _context.Update(dish);
-                await _context.SaveChangesAsync();
+                _dishService.Create(dish, form);
                 return RedirectToAction(nameof(Index));
             }
             return View(dish);
         }
 
         // GET: Dishes/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public IActionResult Edit(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var dish = await _context.Dishes.SingleOrDefaultAsync(m => m.DishId == id);
+            var dish = _dishService.GetDish(id);
             if (dish == null)
             {
                 return NotFound();
@@ -107,7 +87,7 @@ namespace PizzaButiken.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("DishId,Name,Price,DishCategoryId,ImageUrl")] Dish dish, IFormCollection form)
+        public IActionResult Edit(int id, [Bind("DishId,Name,Price,DishCategoryId,ImageUrl")] Dish dish, IFormCollection form)
         {
             if (id != dish.DishId)
             {
@@ -118,29 +98,7 @@ namespace PizzaButiken.Controllers
             {
                 try
                 {
-                    var filename = form.Files[0].FileName;
-                    if (!string.IsNullOrEmpty(filename))
-                    {
-                        dish.ImageUrl = filename;
-                    }
-                    
-                    var dishIngredients = _context.DishIngredients.Where(x => x.DishId == dish.DishId);
-                    _context.DishIngredients.RemoveRange(dishIngredients);
-                    _context.Update(dish);
-                    await _context.SaveChangesAsync();
-
-                    var key = form.Keys.FirstOrDefault(k => k.Contains("ingredient-"));
-                    var dashPos = key.IndexOf("-");
-                    var checkedIngredients = form.Keys.Where(k => k.Contains("ingredient-"));
-                    dish.DishIngredients = new List<DishIngredient>();
-
-                    foreach (var ingredient in checkedIngredients)
-                    {
-                        var checkboxId = int.Parse(ingredient.Substring(dashPos + 1));
-                        dish.DishIngredients.Add(new DishIngredient { IngredientId = checkboxId, Enabled = true, DishId = dish.DishId });
-                    }
-                    _context.Update(dish);
-                    await _context.SaveChangesAsync();
+                    _dishService.Edit(dish, form);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -159,15 +117,14 @@ namespace PizzaButiken.Controllers
         }
 
         // GET: Dishes/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public IActionResult Delete(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var dish = await _context.Dishes
-                .SingleOrDefaultAsync(m => m.DishId == id);
+            var dish = _dishService.GetDish(id);
             if (dish == null)
             {
                 return NotFound();
@@ -179,17 +136,19 @@ namespace PizzaButiken.Controllers
         // POST: Dishes/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public IActionResult DeleteConfirmed(int id)
         {
-            var dish = await _context.Dishes.SingleOrDefaultAsync(m => m.DishId == id);
-            _context.Dishes.Remove(dish);
-            await _context.SaveChangesAsync();
+            _dishService.Delete(id);
             return RedirectToAction(nameof(Index));
         }
 
         private bool DishExists(int id)
         {
-            return _context.Dishes.Any(e => e.DishId == id);
+            if (_dishService.GetDish(id) != null)
+            {
+                return true;
+            }
+            return false;
         }
     }
 }
