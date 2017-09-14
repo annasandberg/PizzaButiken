@@ -30,7 +30,13 @@ else
                         <p>@dish.Name (@dish.Quantity)</p>
                     }
                 </td>
-                <td><a asp-controller="Order" asp-action="SetToBaked" asp-route-orderId="@order.OrderId" asp-route-cartId="@order.CartId">Baked</a></td>
+                <td>
+                <form asp-controller="Order" asp-action="SetToBaked" method="post">
+                    <input type="hidden" asp-for="@order.OrderId" />
+                    <input type="hidden" asp-for="@order.CartId" />
+                    <input type="submit" value="Baked" class="btn btn-default" />
+                </form>
+                </td>
             </tr>
         }
 

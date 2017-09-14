@@ -1,6 +1,5 @@
 ﻿@inject PizzaButiken.Services.CartService CartService
 
-
 @{
     var cart = CartService.GetCartForCurrentSession(Context.Session);
     var itemsCount = CartService.GetNumberOfItemsInCart(cart.CartId);
@@ -15,13 +14,19 @@
             {
                 <tr>
                     <td class="col-md-2">@di.Name @di.Price <b>(@di.Quantity)</b></td>
-                    <td class="col-xs-1"><a asp-action="IncreaseCartItemQuantity" asp-route-cartItemId="@di.CartItemId"><span class="glyphicon glyphicon-plus-sign"></span></a>
-                        <a asp-action="DecreaseCartItemQuantity" asp-route-cartItemId="@di.CartItemId"><span class="glyphicon glyphicon-minus-sign"></span></a></td>
-                    <td class="col-xs-1"><a asp-action="CustomizeCartItem" asp-route-id="@di.CartItemId" title="Customize">
-                    <span class="glyphicon glyphicon-adjust"></span>
-                    </a></td>
-                    <td class="col-xs-1">
-                        <button type="submit" class="remove" name="remove-@di.CartItemId">
+                    <td class="col-md-1">
+                        <button type="submit" name="increaseQuantity-@di.CartItemId">
+                            <span class="glyphicon glyphicon-plus-sign"></span>
+                        </button>
+                        <button type="submit" name="decreaseQuantity-@di.CartItemId">
+                            <span class="glyphicon glyphicon-minus-sign"></span>
+                        </button>
+                    </td>
+                    <td class="col-md-1">
+                        <a asp-action="CustomizeCartItem" asp-route-id="@di.CartItemId" title="Customize">
+                            <span class="glyphicon glyphicon-adjust"></span>
+                        </a>
+                        <button type="submit" class="remove" name="remove-@di.CartItemId" style="margin-left:10px;">
                             <span class="glyphicon glyphicon-remove" title="Remove"></span>
                         </button>
                     </td>

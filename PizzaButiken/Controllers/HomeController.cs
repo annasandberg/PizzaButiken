@@ -43,6 +43,8 @@ namespace PizzaButiken.Controllers
             {
                 case "add": _cartService.AddItemForCurrentSession(HttpContext.Session, id); break;
                 case "remove": _cartService.DeleteItemForCurrentSession(HttpContext.Session, id); break;
+                case "increaseQuantity": _cartService.IncreaseCartItemQuantity(id); break;
+                case "decreaseQuantity": _cartService.DecreaseCartItemQuantity(id); break;
             }
 
             return RedirectToAction("Index");
@@ -99,20 +101,6 @@ namespace PizzaButiken.Controllers
             {
                 _cartService.CustomizeItemForCurrentsession(HttpContext.Session, cartItem, form);
             }
-            ViewData["ReturnUrl"] = returnUrl;
-            return RedirectToLocal(returnUrl);
-        }
-
-        public IActionResult IncreaseCartItemQuantity(int cartItemId, string returnUrl = null)
-        {
-            _cartService.IncreaseCartItemQuantity(cartItemId);
-            ViewData["ReturnUrl"] = returnUrl;
-            return RedirectToLocal(returnUrl);
-        }
-
-        public IActionResult DecreaseCartItemQuantity(int cartItemId, string returnUrl = null)
-        {
-            _cartService.DecreaseCartItemQuantity(cartItemId);
             ViewData["ReturnUrl"] = returnUrl;
             return RedirectToLocal(returnUrl);
         }

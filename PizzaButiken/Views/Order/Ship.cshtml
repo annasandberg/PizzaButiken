@@ -27,7 +27,13 @@ else
                         <p>@dish.Name (@dish.Quantity)</p>
                     }
                 </td>
-                <td><a asp-controller="Order" asp-action="SetToShipped" asp-route-orderId="@order.OrderId" asp-route-cartId="@order.CartId">Shipped</a></td>
+                <td>
+                    <form asp-controller="Order" asp-action="SetToShipped" method="post">
+                        <input type="hidden" asp-for="@order.OrderId" />
+                        <input type="hidden" asp-for="@order.CartId" />
+                        <input type="submit" value="Shipped" class="btn btn-default" />
+                    </form>
+                </td>
             </tr>
         }
 

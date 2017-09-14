@@ -39,9 +39,28 @@ namespace PizzaButiken.Controllers
             return View();
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult RemoveCartItem(int cartItemId)
         {
             _cartService.DeleteItemForCurrentSession(HttpContext.Session, cartItemId);
+            return RedirectToAction("OrderDetails");
+        }
+
+        [HttpPost]
+        public IActionResult OrderDetailsAction(IFormCollection form)
+        {
+            var key = form.Keys.FirstOrDefault(k => k.Contains("-"));
+            var dashPos = key.IndexOf("-");
+            var action = key.Substring(0, dashPos);
+            var id = int.Parse(key.Substring(dashPos + 1));
+            switch (action)
+            {
+                case "remove": _cartService.DeleteItemForCurrentSession(HttpContext.Session, id); break;
+                case "increaseQuantity": _cartService.IncreaseCartItemQuantity(id); break;
+                case "decreaseQuantity": _cartService.DecreaseCartItemQuantity(id); break;
+            }
+
             return RedirectToAction("OrderDetails");
         }
 
@@ -109,11 +128,13 @@ namespace PizzaButiken.Controllers
             return View(orders);
         }
 
-        public IActionResult SetToBaked(int orderId, int cartId)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult SetToBaked(Order order)
         {
-            var order = _orderService.GetOrder(cartId);
-            order.Baked = true;
-            _context.Update(order);
+            var orderBaked = _orderService.GetOrder(order.CartId);
+            orderBaked.Baked = true;
+            _context.Update(orderBaked);
             _context.SaveChanges();
 
             return RedirectToAction("Bake");
@@ -126,11 +147,13 @@ namespace PizzaButiken.Controllers
             return View(orders);
         }
 
-        public IActionResult SetToShipped(int orderId, int cartId)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult SetToShipped(Order order)
         {
-            var order = _orderService.GetOrder(cartId);
-            order.Shipped = true;
-            _context.Update(order);
+            var orderToShip = _orderService.GetOrder(order.CartId);
+            orderToShip.Shipped = true;
+            _context.Update(orderToShip);
             _context.SaveChanges();
 
             return RedirectToAction("Ship");
