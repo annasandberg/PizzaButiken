@@ -14,21 +14,16 @@ namespace PizzaButiken.Controllers
 {
     public class OrderController : Controller
     {
-        private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IEmailSender _emailSender;
         private readonly OrderService _orderService;
         private readonly CartService _cartService;
 
-        public OrderController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, 
-            IHttpContextAccessor httpContextAccessor, IEmailSender emailSender, OrderService orderService,
-            CartService cartService)
+        public OrderController(UserManager<ApplicationUser> userManager, IHttpContextAccessor httpContextAccessor, 
+            OrderService orderService, CartService cartService)
         {
-            _context = context;
             _userManager = userManager;
             _httpContextAccessor = httpContextAccessor;
-            _emailSender = emailSender;
             _orderService = orderService;
             _cartService = cartService;
         }
@@ -108,14 +103,10 @@ namespace PizzaButiken.Controllers
         public IActionResult OrderPayment(string userEmail)
         {
             var cartId = _cartService.GetTempCartId(HttpContext.Session);
-            var order = _orderService.GetOrder(cartId);
-            order.Paid = true;
-            _context.Update(order);
-            _context.SaveChanges();
 
-            string message = String.Format("Orderdatum: {0} Summa: {1} SEK Fraktavgift: {2} SEK",
-            order.OrderDate.ToString(), order.TotalPrice.ToString(), order.ShippingFee.ToString());
-            _emailSender.SendEmailAsync(userEmail, "Tack för din beställning", message);
+            _orderService.SetOrderToPaid(cartId);
+
+            _orderService.SendConfirmationEmail(cartId, userEmail);
 
             HttpContext.Session.Clear();
 
@@ -124,7 +115,7 @@ namespace PizzaButiken.Controllers
 
         public IActionResult Bake()
         {
-            var orders = _context.Orders.Include(x => x.Cart).ThenInclude(i => i.Items).Where(o => o.Paid == true && o.Baked == false).OrderBy(d => d.OrderDate).ToList();
+            var orders = _orderService.GetOrdersToBake(); 
             return View(orders);
         }
 
@@ -132,18 +123,14 @@ namespace PizzaButiken.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult SetToBaked(Order order)
         {
-            var orderBaked = _orderService.GetOrder(order.CartId);
-            orderBaked.Baked = true;
-            _context.Update(orderBaked);
-            _context.SaveChanges();
+            _orderService.SetOrderToBaked(order);
 
             return RedirectToAction("Bake");
         }
 
         public IActionResult Ship()
         {
-            var orders = _context.Orders.Include(x => x.Cart).ThenInclude(i => i.Items)
-                .Where(o => o.Paid == true && o.Baked == true && o.Shipped == false).OrderBy(d => d.OrderDate).ToList();
+            var orders = _orderService.GetOrdersToShip();
             return View(orders);
         }
 
@@ -151,10 +138,7 @@ namespace PizzaButiken.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult SetToShipped(Order order)
         {
-            var orderToShip = _orderService.GetOrder(order.CartId);
-            orderToShip.Shipped = true;
-            _context.Update(orderToShip);
-            _context.SaveChanges();
+            _orderService.SetOrderToShipped(order);
 
             return RedirectToAction("Ship");
         }
