@@ -19,12 +19,31 @@ namespace PizzaButiken.Services
 
         public List<DishCategory> GetAllDishCategories()
         {
-            return _context.DishCategories.ToList();
+            return _context.DishCategories.OrderBy(dc => dc.Name).ToList();
         }
 
-        public DishCategory GetDishCategory(int id)
+        public DishCategory GetDishCategory(int? id)
         {
             return _context.DishCategories.Find(id);
+        }
+
+        public void CreateDishCategory(DishCategory dishCategory)
+        {
+            _context.Add(dishCategory);
+            _context.SaveChanges();
+        }
+
+        public void Edit(DishCategory dishCategory)
+        {
+            _context.Update(dishCategory);
+            _context.SaveChanges();
+        }
+
+        public void Delete(int id)
+        {
+            var dishCategory = GetDishCategory(id);
+            _context.DishCategories.Remove(dishCategory);
+            _context.SaveChanges();
         }
 
     }

@@ -6,21 +6,22 @@ using Microsoft.AspNetCore.Mvc;
 using PizzaButiken.Data;
 using Microsoft.EntityFrameworkCore;
 using PizzaButiken.Models;
+using PizzaButiken.Services;
 
 namespace PizzaButiken.Controllers
 {
     public class DishCategoriesController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly DishCategoryService _dishCategoryService;
 
-        public DishCategoriesController(ApplicationDbContext context)
+        public DishCategoriesController(DishCategoryService dishCategoryService)
         {
-            _context = context;
+            _dishCategoryService = dishCategoryService;
         }
 
-        public async Task <IActionResult> Index()
+        public IActionResult Index()
         {
-            return View(await _context.DishCategories.OrderBy(dc => dc.Name).ToListAsync());
+            return View(_dishCategoryService.GetAllDishCategories());
         }
 
         public IActionResult Create()
@@ -30,25 +31,25 @@ namespace PizzaButiken.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("DishCategoryId,Name")] DishCategory dishCategory)
+        public IActionResult Create([Bind("DishCategoryId,Name")] DishCategory dishCategory)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(dishCategory);
-                await _context.SaveChangesAsync();
+                _dishCategoryService.CreateDishCategory(dishCategory);
                 return RedirectToAction(nameof(Index));
             }
             return View(dishCategory);
         }
 
-        public async Task<IActionResult> Edit(int? id)
+        public IActionResult Edit(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var dishCategory = await _context.DishCategories.SingleOrDefaultAsync(m => m.DishCategoryId == id);
+            var dishCategory = _dishCategoryService.GetDishCategory(id);
+
             if (dishCategory == null)
             {
                 return NotFound();
@@ -58,7 +59,7 @@ namespace PizzaButiken.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("DishCategoryId,Name")] DishCategory dishCategory)
+        public IActionResult Edit(int id, [Bind("DishCategoryId,Name")] DishCategory dishCategory)
         {
             if (id != dishCategory.DishCategoryId)
             {
@@ -69,8 +70,7 @@ namespace PizzaButiken.Controllers
             {
                 try
                 {
-                    _context.Update(dishCategory);
-                    await _context.SaveChangesAsync();
+                    _dishCategoryService.Edit(dishCategory);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -88,15 +88,14 @@ namespace PizzaButiken.Controllers
             return View(dishCategory);
         }
 
-        public async Task<IActionResult> Delete(int? id)
+        public IActionResult Delete(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var dishCategory = await _context.DishCategories
-                .SingleOrDefaultAsync(m => m.DishCategoryId == id);
+            var dishCategory = _dishCategoryService.GetDishCategory(id);
             if (dishCategory == null)
             {
                 return NotFound();
@@ -107,17 +106,19 @@ namespace PizzaButiken.Controllers
 
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public IActionResult DeleteConfirmed(int id)
         {
-            var dishCategory = await _context.DishCategories.SingleOrDefaultAsync(m => m.DishCategoryId == id);
-            _context.DishCategories.Remove(dishCategory);
-            await _context.SaveChangesAsync();
+            _dishCategoryService.Delete(id);
             return RedirectToAction(nameof(Index));
         }
 
         private bool DishCategoryExists(int id)
         {
-            return _context.DishCategories.Any(e => e.DishCategoryId == id);
+            if (_dishCategoryService.GetDishCategory(id) != null)
+            {
+                return true;
+            }
+            return  false;
         }
     }
 }
