@@ -10,25 +10,31 @@ namespace PizzaButiken.Data
     {
         public static void Initialize(ApplicationDbContext context, UserManager<ApplicationUser> usermanager, RoleManager<IdentityRole> roleManager)
         {
-
-            var aUser = new ApplicationUser();
-            aUser.UserName = "student@tset.com";
-            aUser.Email = "student@tset.com";
-            var r = usermanager.CreateAsync(aUser, "Pa$$w0rd").Result;
-
-            var adminRole = new IdentityRole { Name = "Admin" };
-            var roleresult = roleManager.CreateAsync(adminRole).Result;
-
-            var adminUser = new ApplicationUser();
-            adminUser.UserName = "admin@tset.com";
-            adminUser.Email = "admin@tset.com";
-            var adminUserResult = usermanager.CreateAsync(adminUser, "Pa$$w0rd").Result;
-            if (adminUserResult.Succeeded)
+            if (!context.Roles.Any(x=> x.Name == "Admin"))
             {
-                usermanager.AddToRoleAsync(adminUser, adminRole.Name);
+                var adminRole = new IdentityRole { Name = "Admin" };
+                var roleresult = roleManager.CreateAsync(adminRole).Result;
             }
 
+            if (context.Users.ToList().Count == 0)
+            {
+                var aUser = new ApplicationUser();
+                aUser.UserName = "student@tset.com";
+                aUser.Email = "student@tset.com";
+                var r = usermanager.CreateAsync(aUser, "Pa$$w0rd").Result;
 
+                var adminRole = context.Roles.FirstOrDefault(x => x.Name == "Admin");
+
+                var adminUser = new ApplicationUser();
+                adminUser.UserName = "admin@tset.com";
+                adminUser.Email = "admin@tset.com";
+                var adminUserResult = usermanager.CreateAsync(adminUser, "Pa$$w0rd").Result;
+                if (adminUserResult.Succeeded)
+                {
+                    usermanager.AddToRoleAsync(adminUser, adminRole.Name);
+                }
+            }
+            
             if (context.Dishes.ToList().Count == 0)
             {
                 var cheese = new Ingredient { Name = "Cheese", Price = 5 };

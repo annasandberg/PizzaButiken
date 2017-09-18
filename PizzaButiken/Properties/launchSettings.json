@@ -16,7 +16,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "PizzaButiken": {
+    "PizzaButiken (Development)": {
       "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {
@@ -24,13 +24,21 @@
       },
       "applicationUrl": "http://localhost:57690/"
     },
-    "Local (Production)": {
+    "PizzaButiken (Production)": {
       "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Production"
       },
       "applicationUrl": "http://localhost:57690/"
+    },
+    "PizzaButiken (Staging)": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Staging"
+      },
+      "applicationUrl": "http://localhost:1939/"
     }
   }
 }
