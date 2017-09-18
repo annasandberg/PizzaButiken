@@ -441,12 +441,5 @@ namespace PizzaButikenUnitTests
         }
 
     }
-
-
-        //Det kan innebära viss refaktorering av kod, men det är troligen inte dåligt.
-        //a) Pizza original 
-        //b) Pizza original med extra ingredienser 
-        //c) Pizza original minus vissa ingredienser 
-        //d) Pizza original med extra ingredienser minus vissa ingredienser.
     
 }
