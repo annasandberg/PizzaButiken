@@ -11,6 +11,8 @@ using Microsoft.Extensions.DependencyInjection;
 using PizzaButiken.Data;
 using PizzaButiken.Models;
 using PizzaButiken.Services;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.AzureAppServices;
 
 namespace PizzaButiken
 {
@@ -29,11 +31,6 @@ namespace PizzaButiken
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            //services.AddDbContext<ApplicationDbContext>(options =>
-            //    options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
-
-            //services.AddDbContext<ApplicationDbContext>(options => options.UseInMemoryDatabase("DefaultConnection"));
-
             if (_environment.IsProduction() || _environment.IsStaging())
             {
                 services.AddDbContext<ApplicationDbContext>(options =>
@@ -71,8 +68,16 @@ namespace PizzaButiken
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, UserManager<ApplicationUser> userManager, ApplicationDbContext context, RoleManager<IdentityRole> roleManager)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, UserManager<ApplicationUser> userManager, 
+            ApplicationDbContext context, RoleManager<IdentityRole> roleManager, ILoggerFactory loggerFactory)
         {
+            if (env.IsProduction())
+                loggerFactory.AddAzureWebAppDiagnostics(
+                 new AzureAppServicesDiagnosticsSettings
+                 {
+                     OutputTemplate = "{Timestamp:yyyy-MM-dd HH:mm:ss zzz} [{Level}] {RequestId}-{SourceContext}: {Message}{NewLine}{Exception}"
+                 });
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -101,8 +106,6 @@ namespace PizzaButiken
                 context.Database.Migrate();
 
             DBInitializer.Initialize(context, userManager, roleManager);
-
-            //context.Database.Migrate();
         }
     }
 }
