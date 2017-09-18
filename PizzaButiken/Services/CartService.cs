@@ -123,7 +123,6 @@ namespace PizzaButiken.Services
         {
             var cartItemToCustomize = GetCartItem(cartItem);
             var cart = GetCartForCurrentSession(session);
-            //var sameSpecialCartItem = GetSameSpecialCartItem(cart, cartItemToCustomize, form);
 
             try
             {
@@ -131,18 +130,9 @@ namespace PizzaButiken.Services
                 {
                     SetCartItemName(cartItemToCustomize);
 
-                    //if (SameSpecialPizzaExistsInCart(cart, cartItemToCustomize, form))
-                    //{
-                    //    sameSpecialCartItem.Quantity++;
-                    //    _context.Update(sameSpecialCartItem);
-                    //    DeleteItemForCurrentSession(session, cartItem.CartItemId);
-                    //}
-                    //else
-                    //{
                     DeleteCartItemIngredients(cartItemToCustomize);
                     AddCheckedCartItemIngredients(form, cartItemToCustomize);
                     _context.Update(cartItemToCustomize);
-                    //}
 
                     _context.SaveChanges();
                 }
@@ -154,15 +144,7 @@ namespace PizzaButiken.Services
 
                     var dish = GetDish(cartItemToCustomize.DishId);
 
-                    //if (SameSpecialPizzaExistsInCart(cart, cartItemToCustomize, form))
-                    //{
-                    //    sameSpecialCartItem.Quantity++;
-                    //    _context.Update(sameSpecialCartItem);
-                    //}
-                    //else
-                    //{
                     AddNewCartItemToCart(cart, dish, form);
-                    //}
 
                     _context.Update(cart);
                     _context.SaveChanges();
@@ -354,30 +336,5 @@ namespace PizzaButiken.Services
         {
             return _context.CartItems.Any(e => e.CartItemId == id);
         }
-
-        //private bool SameSpecialPizzaExistsInCart(Cart cart, CartItem cartItem, IFormCollection form)
-        //{
-        //    var checkedIngredients = GetCheckedIngredients(form);
-        //    var sameCartItem = GetSameSpecialCartItem(cart, cartItem, form);
-        //    if (cart.Items.Any(x => x.Name == cartItem.Name && 
-        //        x.CartItmeIngredients.Count == checkedIngredients.Count() &&
-        //        x.CartItmeIngredients.All(i => i.IngredientId == checkedIngredients.FirstOrDefault(id => id == i.IngredientId))))
-        //    {
-        //        return true;
-        //    }
-        //    return false;
-        //}
-
-        //private CartItem GetSameSpecialCartItem(Cart cart, CartItem cartItem, IFormCollection form)
-        //{
-        //    var checkedIngredients = GetCheckedIngredients(form);
-
-        //    var existingCartItem = cart.Items.FirstOrDefault(x => x.Name == cartItem.Name &&
-        //        x.CartItmeIngredients.Count == checkedIngredients.Count() &&
-        //        x.CartItmeIngredients.All(i => i.IngredientId == checkedIngredients.FirstOrDefault(id => id == i.IngredientId)));
-
-        //    return existingCartItem;
-        //}
-
     }
 }
