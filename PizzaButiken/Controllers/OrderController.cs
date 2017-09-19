@@ -61,18 +61,27 @@ namespace PizzaButiken.Controllers
 
         public IActionResult Checkout(string returnUrl = null)
         {
-            var user = _userManager.GetUserAsync(_httpContextAccessor.HttpContext.User).Result;
-            var appUser = new ShippingAddress
+            var cartId = _cartService.GetTempCartId(HttpContext.Session);
+            var order = _orderService.GetOrder(cartId);
+
+            if (order == null)
             {
-                CustomerName = user?.CustomerName,
-                Email = user?.Email,
-                PhoneNumber = user?.PhoneNumber,
-                Street = user?.Street,
-                PostalCode = user?.PostalCode,
-                City = user?.City
-            };
+                var user = _userManager.GetUserAsync(_httpContextAccessor.HttpContext.User).Result;
+                var appUser = new ShippingAddress
+                {
+                    CustomerName = user?.CustomerName,
+                    Email = user?.Email,
+                    PhoneNumber = user?.PhoneNumber,
+                    Street = user?.Street,
+                    PostalCode = user?.PostalCode,
+                    City = user?.City
+                };
+                ViewData["ReturnUrl"] = returnUrl;
+                return View(appUser);
+            }
+
             ViewData["ReturnUrl"] = returnUrl;
-            return View(appUser);
+            return View(order.ShippingAddress);
         }
 
         [HttpPost]
@@ -80,8 +89,13 @@ namespace PizzaButiken.Controllers
         public IActionResult Checkout([Bind("CustomerName, Email, PhoneNumber, Street, PostalCode, City")]ShippingAddress user)
         {
             var cartId = _cartService.GetTempCartId(HttpContext.Session);
+            var order = _orderService.GetOrder(cartId);
             if (ModelState.IsValid)
             {
+                if (order != null)
+                {
+                    _orderService.UpdateAddress(cartId, user);
+                }
                 _orderService.CreateOrder(cartId, user);
 
                 return View("OrderPayment", user);

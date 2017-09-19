@@ -70,7 +70,15 @@ namespace PizzaButiken.Services
 
         public Order GetOrder(int cartId)
         {
-            return _context.Orders.FirstOrDefault(x => x.CartId == cartId);
+            return _context.Orders.Include(s => s.ShippingAddress).FirstOrDefault(x => x.CartId == cartId);
+        }
+
+        public void UpdateAddress(int cartId, ShippingAddress address)
+        {
+            var order = GetOrder(cartId);
+            order.ShippingAddress = address;
+            _context.Update(order);
+            _context.SaveChanges();
         }
 
         public void SendConfirmationEmail(int cartId, string userEmail)
