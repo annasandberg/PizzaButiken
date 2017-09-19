@@ -226,7 +226,8 @@ namespace PizzaButiken.Controllers
                     CustomerName = model.CustomerName,
                     Street = model.Street,
                     PostalCode = model.PostalCode,
-                    City = model.City
+                    City = model.City,
+                    PhoneNumber = model.PhoneNumber
                 };
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
