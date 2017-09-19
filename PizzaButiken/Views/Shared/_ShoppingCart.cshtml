@@ -15,10 +15,10 @@
                 <tr>
                     <td class="col-md-2">@di.Name @di.Price <b>(@di.Quantity)</b></td>
                     <td class="col-md-1">
-                        <button type="submit" name="increaseQuantity-@di.CartItemId">
+                        <button type="submit" class="formButton" name="increaseQuantity-@di.CartItemId">
                             <span class="glyphicon glyphicon-plus-sign"></span>
                         </button>
-                        <button type="submit" name="decreaseQuantity-@di.CartItemId">
+                        <button type="submit" class="formButton" name="decreaseQuantity-@di.CartItemId">
                             <span class="glyphicon glyphicon-minus-sign"></span>
                         </button>
                     </td>
@@ -26,7 +26,7 @@
                         <a asp-action="CustomizeCartItem" asp-route-id="@di.CartItemId" title="Customize">
                             <span class="glyphicon glyphicon-adjust"></span>
                         </a>
-                        <button type="submit" class="remove" name="remove-@di.CartItemId" style="margin-left:10px;">
+                        <button type="submit" class="formButton remove" name="remove-@di.CartItemId" style="margin-left:10px;">
                             <span class="glyphicon glyphicon-remove" title="Remove"></span>
                         </button>
                     </td>

@@ -39,10 +39,10 @@ else
                         <td class="col-md-1">@item.Price</td>
                         <td class="col-md-1">
                             @item.Quantity
-                            <button type="submit" name="increaseQuantity-@item.CartItemId">
+                            <button type="submit" class="formButton" name="increaseQuantity-@item.CartItemId">
                                 <span class="glyphicon glyphicon-plus-sign" style="margin-left:10px;"></span>
                             </button>
-                            <button type="submit" name="decreaseQuantity-@item.CartItemId">
+                            <button type="submit" class="formButton" name="decreaseQuantity-@item.CartItemId">
                                 <span class="glyphicon glyphicon-minus-sign"></span>
                             </button>
                         </td>
@@ -56,7 +56,7 @@ else
                             <a asp-controller="Home" asp-action="CustomizeCartItem" asp-route-id="@item.CartItemId" title="Customize" asp-route-returnurl="/Order/OrderDetails">
                                 <span class="glyphicon glyphicon-adjust"></span>
                             </a>
-                            <button type="submit" class="remove" name="remove-@item.CartItemId">
+                            <button type="submit" class="formButton remove" name="remove-@item.CartItemId">
                                 <span class="glyphicon glyphicon-remove" title="Remove" style="margin-left:10px;"></span>
                             </button>
                         </td>
